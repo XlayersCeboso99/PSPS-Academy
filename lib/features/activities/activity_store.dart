@@ -1,5 +1,5 @@
-import '../domain/learning_controller.dart';
-import '../features/cu08/activity_models.dart';
+import 'package:psps/core/learning/learning_controller.dart';
+import 'package:psps/features/activities/activity_models.dart';
 
 /// Puente al estado compartido de la app. No crea otra clave o almacenamiento.
 class LearningActivityStore implements ActivityStore {

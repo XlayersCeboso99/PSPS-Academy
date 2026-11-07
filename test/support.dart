@@ -1,4 +1,4 @@
-import 'package:psps/data/progress_store.dart';
+import 'package:psps/core/persistence/progress_store.dart';
 
 class MemoryStore implements ProgressStore {
   String? raw;

@@ -1,4 +1,4 @@
-import '../domain/course.dart';
+import 'package:psps/core/models/course.dart';
 
 // Seed content for the sprint demonstration. D-01 (curriculum grouping and
 // lesson details) still requires validation; IDs remain stable for persistence.

@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'activity_engine.dart';
-import 'activity_models.dart';
+import 'package:psps/features/activities/activity_engine.dart';
+import 'package:psps/features/activities/activity_models.dart';
 
 /// CU-08. Al abrir una actividad se delega el flujo a CU-02.
 /// Esta pantalla no escribe ni otorga puntos/logros.
