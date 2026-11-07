@@ -21,3 +21,33 @@ ios/Runner/GeneratedPluginRegistrant.*
 ios/Pods/
 ios/.symlinks/
 *.apk
+
+# Android build intermediates and Kotlin caches.
+android/.kotlin/
+android/app/.cxx/
+android/captures/
+
+# Build artifacts that must not be versioned.
+*.aab
+*.ipa
+
+# Evidence produced locally by test drivers (see docs/TESTING.md).
+/evidence/
+
+# Credentials and private environment files.
+.env
+.env.*
+*.pem
+google-services.json
+GoogleService-Info.plist
+
+# Editors and OS files.
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# Crash logs written in the project root by external tools.
+/debug.log
