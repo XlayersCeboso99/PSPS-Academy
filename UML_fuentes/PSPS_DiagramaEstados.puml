@@ -1,0 +1,31 @@
+@startuml
+' PSPS · Diagrama de estados del subtema · v1.1 (08/10/2026) · alineado al SRS v0.1
+[*] --> Gris
+
+Gris : Sin iniciar
+Gris : Ninguna pregunta respondida
+
+Naranja : En progreso
+Naranja : Al menos una respondida y al menos una pendiente
+
+Verde : Completado
+Verde : Todas las preguntas respondidas
+
+Gris --> Gris : Abrir o consultar el subtema
+Gris --> Naranja : Responder una pregunta\n[quedan preguntas pendientes]
+Gris --> Verde : Responder una pregunta\n[el subtema tiene una sola pregunta]
+Naranja --> Naranja : Responder otra pregunta\n[quedan pendientes]\n/ o repetir una ya respondida (no cuenta)
+Naranja --> Verde : Responder la última\npregunta pendiente
+Verde --> Verde : Repetir una respuesta\n(solo cambia la retroalimentación)
+
+note right of Naranja
+  La respuesta puede ser correcta
+  o incorrecta; en ambos casos
+  cuenta como respondida.
+end note
+
+note right of Verde
+  Al llegar a verde se verifica si el
+  tema y el módulo quedan completados (CU-04).
+end note
+@enduml

@@ -1,0 +1,26 @@
+Resolving dependencies...
+Downloading packages...
+  cupertino_icons 1.0.9 (2.0.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.3 (1.19.0 available)
+  test_api 0.7.12 (0.7.14 available)
+  vector_math 2.4.2 (2.4.3 available)
+Got dependencies!
+5 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading <repo>/Sprint 1/psps_academy/test/app_test.dart
+00:00 +0: <repo>/Sprint 1/psps_academy/test/app_test.dart: CU01: navigate, read without progress, answer incorrectly and finish subtopic
+00:01 +1: <repo>/Sprint 1/psps_academy/test/app_test.dart: CU02: select activity steps, complete automatically, reopen without duplicate points
+00:01 +2: <repo>/Sprint 1/psps_academy/test/app_test.dart: RNF05: narrow screen and larger text remain navigable
+00:01 +3: loading <repo>/Sprint 1/psps_academy/test/audit_evidence_test.dart
+00:01 +3: <repo>/Sprint 1/psps_academy/test/audit_evidence_test.dart: TU-02: correct answer displays feedback and records progress
+00:02 +4: <repo>/Sprint 1/psps_academy/test/audit_evidence_test.dart: TU-08: all progress badges display text icon and distinct color
+00:02 +5: loading <repo>/Sprint 1/psps_academy/test/progress_test.dart
+00:03 +5: <repo>/Sprint 1/psps_academy/test/progress_test.dart: CU01/CU03: wrong answers count; viewing is read-only; repeats do not count twice
+00:03 +6: <repo>/Sprint 1/psps_academy/test/progress_test.dart: CU04: module completion aggregates all topics, independent of practices
+00:03 +7: <repo>/Sprint 1/psps_academy/test/progress_test.dart: CU02: incomplete and incorrect orders give no reward; automatic completion is idempotent
+00:03 +8: <repo>/Sprint 1/psps_academy/test/progress_test.dart: RF08: restore answers, partial activities and rewards after reopening
+00:03 +9: <repo>/Sprint 1/psps_academy/test/progress_test.dart: RF08: save failure does not publish progress, retry recovers
+00:03 +10: <repo>/Sprint 1/psps_academy/test/progress_test.dart: corrupt data are preserved and loading can be retried
+00:03 +11: <repo>/Sprint 1/psps_academy/test/progress_test.dart: catalog has ten required topics and unique IDs
+00:03 +12: All tests passed!

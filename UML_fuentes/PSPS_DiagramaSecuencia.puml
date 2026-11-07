@@ -1,0 +1,35 @@
+@startuml
+' PSPS · Diagrama de secuencia: responder una pregunta · v1.1 (08/10/2026) · alineado al SRS v0.1
+autonumber
+
+actor Estudiante as E
+participant "InterfazUI" as UI
+participant "Pregunta" as P
+participant "EstadoLocal" as EL
+participant "Progreso\n(Subtema/Tema/Módulo)" as PR
+
+E -> UI : Selecciona una respuesta
+UI -> P : evaluarRespuesta(respuesta)
+P --> UI : correcta/incorrecta + retroalimentación
+
+UI -> EL : registrarRespuesta(preguntaId)
+alt La pregunta ya estaba respondida (RP-02)
+    EL --> UI : sin cambio en el conteo
+else Primera respuesta de la pregunta
+    EL -> EL : agregar preguntaId a preguntasRespondidas
+    EL --> UI : registrada
+end
+
+UI -> PR : calcular estado(subtema, tema, módulo)
+PR -> EL : leer preguntasRespondidas
+PR --> UI : estado del subtema, tema y módulo (CU-03, CU-04)
+
+UI -> EL : guardar()
+alt Guardado correcto
+    EL --> UI : guardado
+    UI --> E : Mostrar correcta/incorrecta, retroalimentación y progreso
+else Falla de escritura (RP-05)
+    EL --> UI : error de guardado
+    UI --> E : Mostrar retroalimentación y aviso de que el avance no se guardó
+end
+@enduml

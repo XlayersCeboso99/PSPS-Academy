@@ -1,0 +1,43 @@
+@startuml
+' PSPS · Diagrama de casos de uso · v1.1 (08/10/2026) · alineado al SRS v0.1
+left to right direction
+skinparam packageStyle rectangle
+
+actor Estudiante as E
+
+package "Aplicación PSPS (sin conexión)" {
+    usecase "CU-05\nExplorar los módulos" as CU05
+    usecase "CU-01\nEstudiar un tema\nde un módulo" as CU01
+    usecase "CU-02\nPracticar conceptos mediante\nuna actividad interactiva" as CU02
+    usecase "CU-03\nConsultar el progreso\ndel recorrido" as CU03
+    usecase "CU-04\nCompletar los contenidos\nde un módulo" as CU04
+    usecase "CU-06\nConsultar los logros\nobtenidos" as CU06
+}
+
+E --> CU05
+E --> CU01
+E --> CU02
+E --> CU03
+E --> CU04
+E --> CU06
+
+CU01 <.. CU04 : <<extend>>\n[se responde la última pregunta\npendiente de un subtema]
+
+note right of CU02
+  La actividad es opcional.
+  No condiciona la finalización
+  de temas ni módulos.
+end note
+
+note bottom of CU03
+  El progreso depende de las
+  preguntas respondidas, no de
+  las respuestas correctas.
+  Consultar no modifica el estado.
+end note
+
+note bottom of CU04
+  Se verifica el tema y el módulo
+  cada vez que se completa un subtema.
+end note
+@enduml

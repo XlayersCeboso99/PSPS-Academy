@@ -1,0 +1,104 @@
+@startuml
+' PSPS · Diagrama de clases · v1.1 (08/10/2026) · alineado al SRS v0.1 y SDS v0.1
+skinparam classAttributeIconSize 0
+
+enum EstadoSubtema {
+    SIN_INICIAR
+    EN_PROGRESO
+    COMPLETADO
+}
+
+class Modulo {
+    - id: String
+    - nombre: String
+    - materia: String
+    + /completado: Boolean
+    + verificarCompletitud(estado: EstadoLocal): Boolean
+}
+
+class Tema {
+    - id: String
+    - nombre: String
+    + /completado: Boolean
+    + verificarCompletitud(estado: EstadoLocal): Boolean
+}
+
+class Subtema {
+    - id: String
+    - nombre: String
+    - contenido: List<String>
+    + /estado: EstadoSubtema
+    + calcularEstado(estado: EstadoLocal): EstadoSubtema
+}
+
+class Pregunta {
+    - id: String
+    - enunciado: String
+    - opciones: List<String>
+    - respuestaCorrecta: String
+    - retroalimentacion: String
+    + evaluarRespuesta(respuesta: String): Boolean
+}
+
+class ActividadInteractiva {
+    - id: String
+    - instrucciones: String
+    - opcional: Boolean = true
+    + estaRealizada(estado: EstadoLocal): Boolean
+}
+
+class ElementoActividad {
+    - id: String
+}
+
+class Logro {
+    - id: String
+    - nombre: String
+    - condicion: String
+}
+
+class EstadoLocal {
+    - versionEsquema: Integer
+    - versionCatalogo: String
+    - preguntasRespondidas: Set<String>
+    - elementosCompletados: Set<String>
+    - actividadesRealizadas: Set<String>
+    - logrosObtenidos: Set<String>
+    - puntosTotales: Integer
+    + registrarRespuesta(preguntaId: String): Boolean
+    + registrarElemento(actividadId: String, elementoId: String): Boolean
+    + guardar(): ResultadoGuardado
+    + recuperar(): EstadoLocal
+}
+
+Modulo "1" *-- "1..*" Tema : contiene
+Tema "1" *-- "1..*" Subtema : contiene
+Subtema "1" *-- "1..*" Pregunta : contiene
+Tema "1" -- "0..*" ActividadInteractiva : tiene asociada
+ActividadInteractiva "1" *-- "1..*" ElementoActividad : contiene
+
+EstadoLocal ..> Pregunta : registra IDs respondidos
+EstadoLocal ..> ActividadInteractiva : registra realización
+EstadoLocal ..> Logro : registra logros obtenidos
+Subtema ..> EstadoSubtema
+
+note right of EstadoSubtema
+  SIN_INICIAR = gris
+  EN_PROGRESO = naranja
+  COMPLETADO = verde
+  (siempre con texto e ícono)
+end note
+
+note right of EstadoLocal
+  Única parte mutable. Los atributos con "/"
+  son derivados: se calculan a partir de
+  preguntasRespondidas (RP-02: cada ID cuenta
+  una sola vez). Las recompensas se asignan
+  solo en la primera transición a realizada (RP-03).
+end note
+
+note bottom of Logro
+  Nombres, condiciones y puntos
+  según el catálogo aprobado (D-02).
+end note
+@enduml

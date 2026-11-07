@@ -1,0 +1,23 @@
+{
+  "modo_avion": "1",
+  "pid_despues": null,
+  "fecha": "2026-10-10",
+  "modelo": "24049RN28L",
+  "verificacion_proceso": "adb shell pidof mx.edu.uaz.psps",
+  "wifi": "0",
+  "comando_cierre": "adb shell am force-stop mx.edu.uaz.psps",
+  "conectividad_previa": {
+    "wifi": "1",
+    "modo_avion": "0",
+    "datos": "1"
+  },
+  "pid_antes": "19507",
+  "android": "16",
+  "datos": "0",
+  "conectividad_restaurada": {
+    "wifi": "1",
+    "modo_avion": "0",
+    "datos": "1"
+  },
+  "app_normal_reinstalada": true
+}
