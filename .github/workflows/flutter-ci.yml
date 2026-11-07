@@ -1,0 +1,42 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flutter-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - name: Install dependencies (locked)
+        run: flutter pub get --enforce-lockfile
+
+      # A formatting gate (dart format --set-exit-if-changed) is not enabled yet:
+      # 7 inherited files are not dart-formatted. See docs/SPRINT3_PREPARATION.md.
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Unit and widget tests
+        run: flutter test
+
+      - name: Inherited Sprint 1 verifications
+        run: flutter test tool/verifications/defects_sprint01_verification_test.dart
