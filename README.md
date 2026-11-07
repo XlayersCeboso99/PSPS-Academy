@@ -1,72 +1,125 @@
 # PSPS Academy — Aprende Ingeniería de Software
 
-Versión de desarrollo **0.2.0-dev.2+3**, construida sobre el sprint 1 e incorporando el diseño del sprint 2: repaso CU-07, actividades CU-08, búsqueda CU-09, puntos CU-10, logros CU-06 y temas visuales G-03. Permite estudiar y practicar sin conexión. Incluye proyectos Android/iOS; iOS aún no está verificado.
+PSPS Academy es una aplicación educativa móvil, desarrollada con Flutter, para estudiar y practicar Ingeniería de Software **sin conexión a internet**. El estudiante recorre módulos, temas y subtemas, responde preguntas con retroalimentación inmediata, realiza actividades de ordenamiento, repasa sus errores, gana puntos y logros y desbloquea temas visuales. Todo el avance se guarda en el dispositivo.
 
-La guía vigente de este incremento está en [DISEÑO DEL SPRINT 2](docs/DISENO_SPRINT2.md), con decisiones de interfaz, compatibilidad y comprobaciones.
+> **Estado:** versión `0.2.0+5`, migrada sin cambios funcionales desde el repositorio del curso `TSP_PSPS` (ver [Procedencia](#procedencia)). Base preparada para el Sprint 3.
 
-## Repaso CU-07
+## Objetivo educativo
 
-Entra a un tema o módulo y pulsa **Repasar preguntas**. Verás únicamente sus preguntas originalmente incorrectas y todavía no resueltas en repaso. Selecciona una, elige una opción y comprueba la respuesta. Si te equivocas, puedes reintentar; si aciertas y se guarda el resultado, desaparece de pendientes. Salir sin comprobar no registra una respuesta.
+Ofrecer a estudiantes de Ingeniería de Software un recorrido breve y autónomo por fundamentos (estructuras y algoritmos, programación orientada a objetos, datos y relaciones, diseño centrado en las personas), con práctica inmediata y seguimiento visible del progreso, incluso sin red. Los contenidos actuales son **demostrativos**.
 
-El repaso funciona offline, se conserva al reiniciar y no modifica respuestas originales, avance, estados ni puntos. Acertar en el repaso 3 preguntas que habías respondido mal otorga el logro L-10 «Aprendo del error» (CU-06). Los datos de la versión anterior se recuperan sin restablecer el progreso. Consulta [alcance y pruebas de CU-07](docs/CU07_REPASO.md).
+## Funcionalidades disponibles
 
-Incluye cuatro módulos, diez temas, veinte preguntas con retroalimentación, diez actividades de ordenamiento, estados de progreso y almacenamiento local. Aplica el catálogo del equipo: diez puntos por primera actividad completada, once logros (L-01 a L-11) y cuatro temas de color. Los contenidos educativos siguen siendo demostrativos. El servidor y las pruebas iOS están pendientes.
+| CU | Funcionalidad |
+| --- | --- |
+| CU-01 | Estudiar subtemas: contenido, ejemplo y preguntas con retroalimentación inmediata. |
+| CU-02 | Realizar actividades opcionales de ordenamiento de pasos. |
+| CU-03 | Consultar progreso (Sin iniciar / En progreso / Completado, con texto, ícono y color). |
+| CU-04 | Completar contenidos: el estado se agrega de subtema a tema y a módulo. |
+| CU-05 | Explorar libremente los módulos, temas y subtemas. |
+| CU-06 | Consultar logros (10 logros) y elegir temas visuales desbloqueados. |
+| CU-07 | Repasar respuestas originalmente incorrectas sin alterar avance ni recompensas. |
+| CU-08 | Consultar actividades por módulo y tema (Pendiente / Realizada). |
+| CU-09 | Buscar contenidos por palabra clave (títulos y contenido; sin acentos ni mayúsculas). |
+| CU-10 | Consultar puntos (10 por cada actividad completada por primera vez). |
 
-## Ejecutar
+Catálogo actual: 4 módulos, 10 temas, 20 preguntas y 10 actividades. Detalle de reglas en [docs/USE_CASES.md](docs/USE_CASES.md).
 
-Necesitas Flutter 3.47.2 con Dart 3.13.2 o una versión compatible con el proyecto.
+## Tecnologías
 
-```powershell
-cd "Sprint 1/psps_academy"
+- Flutter (canal estable) y Dart `^3.13.2`; verificado con Flutter 3.47.9 / Dart 3.13.7.
+- `shared_preferences` (`SharedPreferencesAsync`) para persistencia local; sin backend ni red.
+- Material 3; pruebas con `flutter_test`, `integration_test` y `flutter_driver`; análisis con `flutter_lints`.
+- Android: Gradle 9.3.1 (Kotlin DSL), AGP 9.1.0, Kotlin 2.4.0, Java 17.
+
+## Requisitos de desarrollo
+
+- Flutter estable compatible con Dart 3.13 (`flutter --version`).
+- Android SDK con licencias aceptadas y JDK 17+ (el de Android Studio sirve).
+- Git.
+- Opcional: dispositivo Android con depuración USB o un emulador.
+
+Guía completa de instalación de Flutter y del entorno: [docs/SETUP.md](docs/SETUP.md).
+
+## Descargar y ejecutar
+
+```bash
+git clone https://github.com/XlayersCeboso99/PSPS-Academy.git
+cd PSPS-Academy
 flutter pub get
-flutter devices
-flutter run -d chrome
+flutter devices                # identifica tu dispositivo
+flutter run -d <identificador> # Android
 ```
 
-Para Android, conecta tu teléfono, activa depuración USB y acepta los avisos de autorización e instalación. Usa el identificador mostrado por `flutter devices`:
+APK de depuración (no se versiona):
 
-```powershell
-flutter run -d <identificador>
-```
-
-Para abrir el proyecto en Visual Studio Code, abre esta carpeta (`Sprint 1/psps_academy`), selecciona el dispositivo y ejecuta la aplicación.
-
-## Construir el APK
-
-```powershell
+```bash
 flutter build apk --debug
+# build/app/outputs/flutter-apk/app-debug.apk
 ```
 
-El resultado está en `build/app/outputs/flutter-apk/app-debug.apk`. El APK no se versiona en el repositorio (pesa unos 170 MB); se genera con el comando anterior.
+En Windows, si Gradle falla por `PKIX`/`certificate_unknown`, usa `.\tool\build_android.ps1` (ver [docs/SETUP.md](docs/SETUP.md)).
 
-Si en Windows una descarga de Gradle falla por `PKIX` o `certificate_unknown`, utiliza el script local, que usa los certificados de confianza de Windows:
+## Pruebas
 
-```powershell
-.\tool\build_android.ps1
-```
-
-El script aplica la configuración únicamente durante su ejecución. No omite la validación de certificados ni modifica permanentemente Java.
-
-## Verificar
-
-```powershell
+```bash
 flutter analyze
-flutter test
-.\tool\verify_sprint2_android.ps1 -DeviceId <identificador>
+flutter test                                                         # pruebas unitarias y de widgets
+flutter test tool/verifications/defects_sprint01_verification_test.dart
 ```
 
-El script de integración crea una copia temporal con un ID de aplicación distinto; usa además una clave de datos de prueba. Es necesario aislar ambos porque Flutter puede desinstalar la app que usa como ejecutor. Las pruebas unitarias y de interfaz emplean almacenamiento simulado; la integración comprueba el almacenamiento nativo real y exporta capturas. El estado efectivo de las verificaciones se registra en la documentación del sprint.
+Las pruebas de integración en dispositivo, sus claves de almacenamiento aisladas y lo que falta verificar se describen en [docs/TESTING.md](docs/TESTING.md).
 
-## Documentación
+## Organización de carpetas
 
-- Manual de usuario: `PSPS_ManualDeUsuario_TSP_Ago26.pdf`
-- Guía de operación: `PSPS_GuiaDeOperacion_TSP_Ago26.pdf`
-- Casos de prueba ejecutados: `PSPS_CasosDePruebaEjecutados_WP14.pdf`
-- Reporte de pruebas: `PSPS_ReporteDePruebas_WP15.pdf`
-- [Evidencias de la verificación](../Pruebas/evidencias) y [cómo reproducirla](../Pruebas/REPRODUCIR.md)
-- [Guía de instalación y exposición](docs/GUIA_DEMO.md)
-- [Alcance, pruebas y pendientes del sprint](docs/SPRINT_1.md)
+```text
+lib/
+  main.dart            arranque: crea LearningController y PspsApp
+  app/                 interfaz (library app.dart + part review_screens / sprint2_screens)
+  core/
+    models/            modelo del curso (módulos, temas, subtemas, preguntas, prácticas)
+    content/           catálogo educativo y validaciones
+    persistence/       almacenamiento local del progreso
+    learning/          LearningController y gamificación (puntos, logros, temas)
+  features/
+    activities/        CU-08 consultar actividades
+    search/            CU-09 búsqueda de contenidos
+test/                  pruebas unitarias y de widgets (+ test/regression/)
+integration_test/      pruebas en dispositivo
+test_driver/           drivers que exportan capturas
+tool/                  scripts Android y verificaciones heredadas
+android/ ios/ web/     proyectos de plataforma
+docs/                  documentación vigente, auditoría y documentos heredados
+```
 
-Las lecciones se editan en `lib/data/catalog.dart`; las reglas de recorrido están en `lib/domain/learning_controller.dart`. Los IDs se mantienen estables para asociar el estado guardado con el contenido.
+Detalle y reglas de dependencia: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-La versión iOS requiere compilación, firma y pruebas con macOS/Xcode; todavía no está verificada.
+## Soporte multiplataforma (estado real)
+
+| Plataforma | Estado |
+| --- | --- |
+| Android | Compila (`flutter build apk --debug` verificado el 06/11/2026). Pruebas en dispositivo tras la migración: **pendientes**. |
+| iOS | Proyecto presente, **no verificado** (requiere macOS/Xcode y firma). |
+| HarmonyOS NEXT | Objetivo del proyecto, **sin soporte todavía**; el Flutter oficial no ofrece ese destino. Ver [docs/SPRINT3_PREPARATION.md](docs/SPRINT3_PREPARATION.md). |
+| Web | Carpeta presente por la plantilla de Flutter; no es objetivo del proyecto. |
+
+## Procedencia
+
+Migrado desde [`XlayersCeboso99/TSP_PSPS`](https://github.com/XlayersCeboso99/TSP_PSPS), rama `develop`, commit `119ab3eed0467c62d6b6c3c73b0705ff302a16b1`, carpeta `Sprint 2/psps_academy`. El historial anterior, los PDF del curso (manual de usuario, guía de operación, reportes de pruebas) y las evidencias de los sprints 1 y 2 permanecen en ese repositorio. Detalles: [docs/MIGRATION_REPORT.md](docs/MIGRATION_REPORT.md).
+
+## Limitaciones conocidas
+
+- Contenido educativo demostrativo; se edita en `lib/core/content/catalog.dart`.
+- Sin servidor, cuentas ni sincronización entre dispositivos.
+- La compilación *release* usa la firma *debug*; no apta para publicación en tienda.
+- iOS y HarmonyOS NEXT no verificados.
+- El catálogo admite módulos/temas vacíos que el SRS (RP-01) prohíbe; decisión pendiente.
+- Lista completa: [docs/MIGRATION_REPORT.md](docs/MIGRATION_REPORT.md#pendientes).
+
+## Contribuir
+
+Flujo de ramas, commits y revisión: [CONTRIBUTING.md](CONTRIBUTING.md). Cambios: [CHANGELOG.md](CHANGELOG.md).
+
+## Licencia y atribuciones
+
+Proyecto académico del equipo PSPS (curso TSP). El repositorio de origen no declara una licencia; hasta que el equipo elija una, todos los derechos quedan reservados a sus autores. Los íconos de la plantilla de Flutter y las dependencias (`shared_preferences`, `cupertino_icons`, SDK de Flutter) se distribuyen bajo licencia BSD-3-Clause / MIT de sus autores.
