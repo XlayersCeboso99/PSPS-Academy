@@ -187,7 +187,7 @@ rutas nombradas. La navegación se hace con `Navigator` y `MaterialPageRoute`:
    `integration_test/`. No modificar aserciones ni pruebas existentes para
    acomodar el comportamiento nuevo.
 6. **Validar y documentar.** Ejecutar `flutter analyze`, `flutter test` y
-   `dart format --output=none --set-exit-if-changed lib test integration_test test_driver tool`.
+   `dart format` sobre los archivos nuevos o modificados.
    Actualizar este documento y la trazabilidad de `docs/audit/` si el caso de
    uso es nuevo.
 
@@ -200,10 +200,11 @@ flutter pub get
 flutter analyze
 flutter test
 flutter test tool/verifications/defects_sprint01_verification_test.dart
-dart format --output=none --set-exit-if-changed lib test integration_test test_driver tool
 ```
 
-Resultados esperados en esta rama: `flutter analyze` sin incidencias, 140 pruebas
-aprobadas en `test/`, 5 aprobadas en la verificación de defectos del Sprint 1 y
-formato sin cambios. `integration_test/` contiene las 8 pruebas de integración y
-`test_driver/` los drivers de evidencias.
+Resultados verificados tras la integración: `flutter analyze` sin incidencias,
+148 pruebas aprobadas en `test/` (140 heredadas + 8 de `test/regression/`) y 5
+en la verificación de defectos del Sprint 1. `dart format --set-exit-if-changed`
+aún señala 7 archivos heredados sin formato (ver `docs/SPRINT3_PREPARATION.md`).
+`integration_test/` contiene las 8 pruebas de integración y `test_driver/` los
+drivers de evidencias.
