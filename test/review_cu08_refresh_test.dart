@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:psps/features/cu08/activity_engine.dart';
-import 'package:psps/features/cu08/activity_models.dart';
-import 'package:psps/features/cu08/activity_page.dart';
+import 'package:psps/features/activities/activity_engine.dart';
+import 'package:psps/features/activities/activity_models.dart';
+import 'package:psps/features/activities/activity_page.dart';
 
 class ReviewStore implements ActivityStore {
   ActivityState state = ActivityState(completedActivityIds: {});

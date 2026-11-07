@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'data/catalog.dart';
-import 'data/progress_store.dart';
-import 'domain/learning_controller.dart';
-import 'ui/app.dart';
+import 'package:psps/core/content/catalog.dart';
+import 'package:psps/core/persistence/progress_store.dart';
+import 'package:psps/core/learning/learning_controller.dart';
+import 'package:psps/app/app.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

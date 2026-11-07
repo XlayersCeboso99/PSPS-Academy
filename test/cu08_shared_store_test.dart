@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:psps/data/catalog.dart';
-import 'package:psps/data/activity_store.dart';
-import 'package:psps/domain/learning_controller.dart';
-import 'package:psps/features/cu08/activity_models.dart';
-import 'package:psps/ui/app.dart';
+import 'package:psps/core/content/catalog.dart';
+import 'package:psps/features/activities/activity_store.dart';
+import 'package:psps/core/learning/learning_controller.dart';
+import 'package:psps/features/activities/activity_models.dart';
+import 'package:psps/app/app.dart';
 
 import 'support.dart';
 

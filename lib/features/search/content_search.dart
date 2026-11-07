@@ -1,4 +1,4 @@
-import 'course.dart';
+import 'package:psps/core/models/course.dart';
 
 // C02 · CU-09 Buscar contenidos por palabra clave (RF-11, CA-11).
 // Diseño: borrador S2-36, sección 2.3. Dart puro y solo lectura: busca en el

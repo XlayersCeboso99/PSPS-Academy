@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:psps/data/catalog.dart';
-import 'package:psps/data/progress_store.dart';
-import 'package:psps/domain/course.dart';
-import 'package:psps/domain/learning_controller.dart';
-import 'package:psps/ui/app.dart';
+import 'package:psps/core/content/catalog.dart';
+import 'package:psps/core/persistence/progress_store.dart';
+import 'package:psps/core/models/course.dart';
+import 'package:psps/core/learning/learning_controller.dart';
+import 'package:psps/app/app.dart';
 
 // Run prepare, stop the Android process, then run verify without clearing data.
 // This exclusive key never writes the student's normal progress.

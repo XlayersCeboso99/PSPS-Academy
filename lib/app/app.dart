@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../domain/course.dart';
-import '../domain/learning_controller.dart';
-import '../domain/content_search.dart';
-import '../domain/gamification.dart';
-import '../data/activity_store.dart';
-import '../features/cu08/activity_engine.dart';
-import '../features/cu08/activity_models.dart';
-import '../features/cu08/activity_page.dart';
+import 'package:psps/core/models/course.dart';
+import 'package:psps/core/learning/learning_controller.dart';
+import 'package:psps/features/search/content_search.dart';
+import 'package:psps/core/learning/gamification.dart';
+import 'package:psps/features/activities/activity_store.dart';
+import 'package:psps/features/activities/activity_engine.dart';
+import 'package:psps/features/activities/activity_models.dart';
+import 'package:psps/features/activities/activity_page.dart';
 
 part 'review_screens.dart';
 part 'sprint2_screens.dart';

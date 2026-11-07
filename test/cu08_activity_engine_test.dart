@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:psps/features/cu08/activity_engine.dart';
-import 'package:psps/features/cu08/activity_models.dart';
+import 'package:psps/features/activities/activity_engine.dart';
+import 'package:psps/features/activities/activity_models.dart';
 
 class FakeStore implements ActivityStore {
   FakeStore(this.state);

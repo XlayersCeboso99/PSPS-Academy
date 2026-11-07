@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'activity_models.dart';
+import 'package:psps/features/activities/activity_models.dart';
 
 /// Orquestación C05 -> C06 -> C07. No incluye almacenamiento ficticio.
 /// El adaptador real debe conectarse a la persistencia existente de PSPS.
