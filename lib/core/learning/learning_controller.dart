@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 
-import '../data/progress_store.dart';
-import 'catalog_validation.dart';
-import '../data/catalog_validation.dart' as identity_validation;
-import 'course.dart';
-import 'gamification.dart';
+import 'package:psps/core/persistence/progress_store.dart';
+import 'package:psps/core/content/catalog_validation.dart';
+import 'package:psps/core/content/catalog_identity_validation.dart'
+    as identity_validation;
+import 'package:psps/core/models/course.dart';
+import 'package:psps/core/learning/gamification.dart';
 
 class LearningController extends ChangeNotifier {
   LearningController({required this.modules, required this.store});

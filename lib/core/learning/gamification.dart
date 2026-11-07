@@ -1,4 +1,4 @@
-import 'course.dart';
+import 'package:psps/core/models/course.dart';
 
 // C06 Gamificación (SDS v0.2, sección 9). Catálogo acordado por el equipo en
 // MR-09: «G-02 Logros y G-03 Desbloqueos» (S2-37, opción b) y «Propuesta G-01

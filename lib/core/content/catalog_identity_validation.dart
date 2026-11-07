@@ -1,4 +1,4 @@
-import '../domain/course.dart';
+import 'package:psps/core/models/course.dart';
 
 /// Validate identity and question data before the catalog reaches the UI.
 /// An empty catalog and topics without optional activities remain supported.

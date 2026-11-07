@@ -1,4 +1,4 @@
-import 'course.dart';
+import 'package:psps/core/models/course.dart';
 
 /// D-S1-01 · RP-01 · TU-06: valida el catálogo antes de usarlo.
 ///
