@@ -1,0 +1,15 @@
+// Fusionar dentro de module en ohos/entry/src/main/module.json5.
+// Conservar cualquier permiso generado que necesiten otros plugins.
+// Verificar esquema y usedScene con el SDK elegido; no compilado.
+{
+  "requestPermissions": [
+    {
+      "name": "ohos.permission.PUBLISH_AGENT_REMINDER",
+      "reason": "$string:reason_publish_agent_reminder",
+      "usedScene": {
+        "abilities": ["EntryAbility"],
+        "when": "always"
+      }
+    }
+  ]
+}
