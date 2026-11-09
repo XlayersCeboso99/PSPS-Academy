@@ -382,12 +382,15 @@ void main() {
           ),
         );
         await tester.pumpAndSettle();
-        expect(find.text('100 pts'), findsOneWidget);
+        final total =
+            controller.practices.length * LearningController.pointsPerPractice;
+        expect(controller.points, total);
+        expect(find.text('$total pts'), findsOneWidget);
         final node = tester.getSemantics(
           find.byKey(const ValueKey('cu10.total')),
         );
         expect(node.label, 'Total de puntos acumulados');
-        expect(node.value, '100 puntos');
+        expect(node.value, '$total puntos');
         expect(tester.takeException(), isNull);
       } finally {
         semantics.dispose();

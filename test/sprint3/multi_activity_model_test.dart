@@ -218,28 +218,35 @@ void main() {
       expect(view.map((m) => m.id), ['m1']);
     });
 
-    test('el conjunto congelado coincide con el catálogo real actual', () {
-      final questions = catalog.expand((m) => m.questions).map((q) => q.id);
-      final practices = catalog
-          .expand((m) => m.topics)
-          .expand((t) => t.practices)
-          .where((p) => p.steps.isNotEmpty)
-          .map((p) => p.id);
-      expect(questions, hasLength(20));
-      expect(practices, hasLength(10));
-      expect({...questions, ...practices}, legacyContentIds);
-      expect(legacyContentIds, hasLength(30));
-      // La vista legada del catálogo real es el mismo contenido.
-      final view = legacyView(catalog);
-      expect(view.expand((m) => m.questions).map((q) => q.id), questions);
-      expect(
-        view
+    test(
+      'el conjunto congelado coincide exactamente con la vista legada real',
+      () {
+        final questions = catalog
+            .expand((m) => m.questions)
+            .map((q) => q.id)
+            .where(legacyContentIds.contains);
+        final practices = catalog
             .expand((m) => m.topics)
             .expand((t) => t.practices)
-            .map((p) => p.id),
-        practices,
-      );
-    });
+            .where((p) => p.steps.isNotEmpty)
+            .map((p) => p.id)
+            .where(legacyContentIds.contains);
+        expect(questions, hasLength(20));
+        expect(practices, hasLength(10));
+        expect({...questions, ...practices}, legacyContentIds);
+        expect(legacyContentIds, hasLength(30));
+        // La vista legada conserva exactamente el contenido histórico.
+        final view = legacyView(catalog);
+        expect(view.expand((m) => m.questions).map((q) => q.id), questions);
+        expect(
+          view
+              .expand((m) => m.topics)
+              .expand((t) => t.practices)
+              .map((p) => p.id),
+          practices,
+        );
+      },
+    );
   });
 
   group('Conservación de logros al ampliar el catálogo', () {

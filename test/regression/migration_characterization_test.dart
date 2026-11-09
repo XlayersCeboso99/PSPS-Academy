@@ -7,6 +7,7 @@ import 'package:psps/core/learning/learning_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../support.dart';
+import 'legacy_catalog_fixture.dart';
 
 const _key = 'psps.progress.v1';
 const _otherKey = 'psps.regression.unrelated';
@@ -88,7 +89,11 @@ void _expectRecovered(LearningController c, int version) {
       if (c.reviewAnswerFor(q) != null) q.id: c.reviewAnswerFor(q),
   }, fixture['reviewAnswers'] ?? {});
   expect(c.answeredCount, 3);
-  expect(c.progress, 3 / 20);
+  expect(
+    c.progress,
+    (fixture['answers'] as Map).length /
+        catalog.expand((m) => m.questions).length,
+  );
   expect(c.completedPractices, 1);
   expect(c.points, 10);
   expect(c.earnedAchievements, {
@@ -124,6 +129,7 @@ void main() {
       'MIG-01 v$version: keyed JSON loads read-only until an action saves v3',
       () async {
         expect(LocalProgressStore.storageKey, _key);
+        expectHistoricalCatalog(catalog);
         final raw = _fixtures[version]!;
         final preferences = _Preferences(raw);
         final store = LocalProgressStore(preferences: preferences);
@@ -263,9 +269,13 @@ void main() {
         expect(c.newAchievements, isEmpty);
         expect(c.newThemes, isEmpty);
       }
-      expect(c.completedPractices, 10);
-      expect(c.points, 100);
-      expect(rewarded.toSet(), hasLength(10));
+      final practices = catalog
+          .expand((m) => m.topics)
+          .expand((t) => t.practices)
+          .toList();
+      expect(c.completedPractices, practices.length);
+      expect(c.points, practices.length * LearningController.pointsPerPractice);
+      expect(rewarded.toSet(), practices.map((p) => p.id).toSet());
       expect(preferences.writes.toSet(), {_key});
       expect(preferences.values[_otherKey], 'conservar');
     },

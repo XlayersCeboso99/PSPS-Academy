@@ -61,7 +61,8 @@ void main() {
         await c.saveOrder(p, List.generate(p.steps.length, (i) => i));
       }
       expect(c.earnedAchievements.keys.toSet(), {'L-03', 'L-04', 'L-05'});
-      expect(c.points, 100);
+      final total = c.practices.length * Gamification.pointsPerPractice;
+      expect(c.points, total);
       expect(c.answeredCount, 0);
       for (final q in c.questions) {
         await c.answer(q, (q.correctIndex + 1) % q.options.length);
@@ -72,7 +73,7 @@ void main() {
       );
       expect(c.earnedAchievements, isNot(contains('L-10')));
       expect(c.unlockedThemes, {'U-00', 'U-01', 'U-02', 'U-03'});
-      expect(c.points, 100);
+      expect(c.points, total);
     },
   );
 
