@@ -62,8 +62,9 @@ lib/
 | `lib/app/app.dart` | Library de la UI. Contiene constantes visuales y `academyTheme`, `PspsApp`, `HomeScreen` (pestañas Módulos y Mi progreso), `ModuleScreen`, `TopicScreen`, `LessonScreen`, `QuestionsScreen`, `PracticeScreen`, los widgets reutilizables `StatusBadge` y `ScreenFrame`, y los ayudantes `openScreen`, `reportSave`, `panel`, `caption` y `heading`. |
 | `lib/app/review_screens.dart` | `part of 'app.dart'`. Pantallas de CU-07: `ReviewEntry`, `ReviewListScreen` y `ReviewQuestionScreen`. Comparte miembros privados con la library. |
 | `lib/app/sprint2_screens.dart` | `part of 'app.dart'`. Pantallas de la segunda entrega: `FeatureLinks`, `PointsScreen` (CU-10), `ActivitiesScreen` (CU-08), `AchievementsScreen` (CU-06) y `SearchScreen` (CU-09). |
-| `lib/core/models/course.dart` | Entidades del catálogo: `CourseModule`, `Topic`, `Lesson`, `Question`, `Practice` y el enum `ProgressStatus`. Incluye `Practice.presentationOrder`, que mezcla los pasos de forma determinista por identificador. |
-| `lib/core/content/catalog.dart` | Catálogo educativo local con cuatro módulos (`m1`–`m4`), sus temas, subtemas, preguntas y actividades. Los identificadores son estables porque el avance guardado se asocia a ellos. |
+| `lib/core/models/course.dart` | Entidades del catálogo: `CourseModule`, `Topic`, `Lesson`, `Question`, `Practice` y el enum `ProgressStatus`. Incluye `Practice.presentationOrder`, que mezcla los pasos de forma determinista por identificador. Cada `Topic` tiene una actividad principal `practice` (`<tema>.a1`) y una lista opcional `extraPractices` (`<tema>.a2`, `<tema>.a3`, …); el getter `practices` devuelve todas, en ese orden, y es lo que usan las reglas de avance, puntos, logros, validación y la UI. |
+| `lib/core/content/catalog.dart` | Catálogo educativo local con cuatro módulos (`m1`–`m4`), sus temas, subtemas, preguntas y actividades. Los identificadores son estables porque el avance guardado se asocia a ellos. El ayudante `_topic` acepta `extraPractices` (título, instrucción, pasos) y numera esas actividades por posición a partir de `a2`. |
+| `lib/core/content/catalog_legacy.dart` | `legacyContentIds`: conjunto congelado con los 20 identificadores de pregunta y los 10 de actividad del catálogo publicado hasta el Sprint 3, y `legacyView(modules, {legacyIds})`, que devuelve el catálogo restringido a ese contenido (solo preguntas legadas, sin `extraPractices`, omitiendo módulos, temas y subtemas sin contenido legado). Solo se usa para conservar logros ya obtenidos; no se modifica al ampliar el catálogo. |
 | `lib/core/content/catalog_validation.dart` | `validateCatalog` de la corrección D-S1-01: devuelve la lista de problemas estructurales del catálogo (identificadores vacíos o repetidos, subtemas sin preguntas, opciones o respuestas inválidas). No modifica datos. |
 | `lib/core/content/catalog_identity_validation.dart` | Segundo validador, antes en `lib/data/catalog_validation.dart`, que lanza `FormatException` ante identidades o preguntas inválidas. Se importa con el alias `identity_validation`. |
 | `lib/core/persistence/progress_store.dart` | `ProgressSnapshot` (estado serializable), la interfaz `ProgressStore` y `LocalProgressStore`, que usa `SharedPreferencesAsync` con la clave `psps.progress.v1`. Codifica y decodifica JSON con versiones 1 a 3. |
@@ -71,7 +72,7 @@ lib/
 | `lib/core/learning/gamification.dart` | Reglas puras de gamificación: catálogo de diez logros (L-01 a L-09 y L-11), temas visuales (U-00 a U-03), puntos por actividad, evaluación de condiciones y mensajes de recompensa. No lee ni escribe almacenamiento. |
 | `lib/features/search/content_search.dart` | `ContentSearch`: búsqueda local por palabra o frase sobre títulos y contenido de los subtemas. Normaliza mayúsculas y acentos, exige un mínimo de caracteres y devuelve resultados con fragmento y posición de la coincidencia. Es de solo lectura. |
 | `lib/features/activities/activity_models.dart` | Modelos de CU-08: `ActivityDefinition`, `ActivityState`, `CompletionOutcome` y la interfaz `ActivityStore`. |
-| `lib/features/activities/activity_engine.dart` | `ActivityEngine`: orquesta la consulta y la finalización de actividades, serializa escrituras y calcula los logros y temas que se otorgan por actividades (L-03, L-04, L-05 y U-01). |
+| `lib/features/activities/activity_engine.dart` | `ActivityEngine`: orquesta la consulta y la finalización de actividades, serializa escrituras y calcula los logros y temas que se otorgan por actividades (L-03, L-04, L-05 y U-01) sobre todas las actividades del catálogo actual; conserva los logros ya registrados y nunca otorga uno por la vista legada. |
 | `lib/features/activities/activity_page.dart` | `Cu08ActivitiesPage`: lista las actividades por módulo y tema, muestra su estado y delega la apertura al callback `onOpenActivity`. No escribe ni recompensa por sí misma. |
 | `lib/features/activities/activity_store.dart` | `LearningActivityStore`: adaptador entre la interfaz `ActivityStore` y el estado compartido del `LearningController`. No crea otra clave de almacenamiento. |
 
@@ -102,6 +103,22 @@ del catálogo.
    `LocalProgressStore.load()`, comprueba la coherencia de respuestas, repasos,
    actividades y recompensas, y deja `ready = true`. Un catálogo o un estado
    inválido produce un mensaje en `loadError` sin sobrescribir lo guardado.
+   Las actividades de un tema son todas las de `Topic.practices`; los puntos
+   son 10 por actividad completada (una sola vez por actividad, sin duplicados
+   en `rewardedPractices`) y el estado de subtema, tema y módulo depende solo
+   de las preguntas, porque las actividades son opcionales.
+   **Conservación de logros al ampliar el catálogo.** Un logro guardado es
+   válido si su condición se cumple con el catálogo actual o con
+   `legacyView(modules)` evaluada con las mismas respuestas, actividades y
+   repasos; el tema visual seleccionado es válido si lo desbloquea esa unión.
+   Un logro que no se cumple en ninguna de las dos vistas sigue haciendo
+   fallar la carga. Al guardar, `_withGamification` conserva con su fecha
+   original los logros guardados que sigan siendo válidos por esa regla, junto
+   con los que se cumplen con el catálogo actual. Un logro nuevo solo se
+   otorga si se cumple con el catálogo actual: la vista legada nunca otorga
+   logros (por ejemplo, L-05 «Realiza todas las actividades» exige todas las
+   actividades del catálogo vigente a quien no lo tenía guardado). El formato
+   de `ProgressSnapshot` no cambia (versión 3).
 3. `LocalProgressStore` usa `SharedPreferencesAsync` y la clave
    `psps.progress.v1`. `ProgressSnapshot.encode()` escribe JSON con `version` 2
    cuando no hay datos de gamificación y 3 cuando los hay; `decode()` acepta las
@@ -133,7 +150,8 @@ rutas nombradas. La navegación se hace con `Navigator` y `MaterialPageRoute`:
 - Desde Inicio se abre `ModuleScreen` al tocar un módulo. La pestaña Mi progreso
   abre `TopicScreen` directamente desde la lista de temas.
 - `ModuleScreen` abre `TopicScreen` al tocar un subtema; `TopicScreen` abre
-  `LessonScreen` (Estudiar subtema) o `PracticeScreen` (Realizar actividad).
+  `LessonScreen` (Estudiar subtema) o `PracticeScreen` (Realizar actividad)
+  para cada actividad del tema, que se listan con su estado.
 - `LessonScreen` abre `QuestionsScreen` con «Ir a preguntas».
 - `ReviewEntry` abre `ReviewListScreen`, que a su vez abre
   `ReviewQuestionScreen`; durante el guardado del repaso `PopScope` bloquea la
@@ -143,7 +161,8 @@ rutas nombradas. La navegación se hace con `Navigator` y `MaterialPageRoute`:
   `Navigator.popUntil((route) => route.isFirst)`.
 - `FeatureLinks` abre `ActivitiesScreen`, `PointsScreen` y `AchievementsScreen`.
   `ActivitiesScreen` integra `Cu08ActivitiesPage` y, mediante `onOpenActivity`,
-  hace `push` de `PracticeScreen` para el flujo normal de CU-02.
+  hace `push` de `PracticeScreen` con la actividad elegida (resuelta por su
+  identificador dentro de `Topic.practices`) para el flujo normal de CU-02.
 - Los botones de volver usan `Navigator.of(context).pop()`.
 
 ## 7. Mapeo CU-01 a CU-10

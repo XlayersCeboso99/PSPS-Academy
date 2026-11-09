@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import 'package:psps/core/persistence/progress_store.dart';
+import 'package:psps/core/content/catalog_legacy.dart';
 import 'package:psps/core/content/catalog_validation.dart';
 import 'package:psps/core/content/catalog_identity_validation.dart'
     as identity_validation;
@@ -8,9 +9,21 @@ import 'package:psps/core/models/course.dart';
 import 'package:psps/core/learning/gamification.dart';
 
 class LearningController extends ChangeNotifier {
-  LearningController({required this.modules, required this.store});
+  LearningController({
+    required this.modules,
+    required this.store,
+    this.legacyIds = legacyContentIds,
+  });
   final List<CourseModule> modules;
   final ProgressStore store;
+
+  /// Contenido del catálogo legado con que se conservan los logros ya
+  /// guardados (ver `catalog_legacy.dart`). Inyectable para pruebas.
+  final Set<String> legacyIds;
+  late final List<CourseModule> _legacyModules = legacyView(
+    modules,
+    legacyIds: legacyIds,
+  );
   ProgressSnapshot _state = ProgressSnapshot();
   bool ready = false;
   bool saving = false;
@@ -22,7 +35,7 @@ class LearningController extends ChangeNotifier {
   Iterable<Question> get questions => lessons.expand((l) => l.questions);
   Iterable<Practice> get practices => modules
       .expand((m) => m.topics)
-      .map((t) => t.practice)
+      .expand((t) => t.practices)
       .where((p) => p.steps.isNotEmpty);
   int get answeredCount => questions.where((q) => answerFor(q) != null).length;
   int get questionCount => questions.length;
@@ -127,12 +140,12 @@ class LearningController extends ChangeNotifier {
         modules,
         state.practices,
       );
-      final eligible = Gamification.eligible(
-        modules,
-        state.answers,
-        state.practices,
-        state.reviewAnswers,
-      );
+      // Un logro guardado es válido si se cumple con el catálogo actual o con
+      // la vista legada (catálogo publicado antes de ampliarlo).
+      final eligible = {
+        ..._eligible(modules, state),
+        ..._eligible(_legacyModules, state),
+      };
       if (state.points != null) {
         final rewarded = state.rewardedPractices.toSet();
         if (rewarded.length != state.rewardedPractices.length ||
@@ -221,18 +234,25 @@ class LearningController extends ChangeNotifier {
     );
   }
 
+  Set<String> _eligible(List<CourseModule> scope, ProgressSnapshot state) =>
+      Gamification.eligible(
+        scope,
+        state.answers,
+        state.practices,
+        state.reviewAnswers,
+      );
+
   ProgressSnapshot _withGamification(
     ProgressSnapshot state, {
     bool historical = false,
     String? theme,
   }) {
-    final eligible = Gamification.eligible(
-      modules,
-      state.answers,
-      state.practices,
-      state.reviewAnswers,
-    );
+    // Solo el catálogo actual otorga logros nuevos.
+    final eligible = _eligible(modules, state);
     final existing = historical ? state.achievements : _state.achievements;
+    // Los logros ya guardados que se cumplen con la vista legada se conservan
+    // con su fecha original aunque el catálogo ampliado ya no los cumpla.
+    final legacy = _eligible(_legacyModules, state);
     final completed = Gamification.completedPracticeIds(
       modules,
       state.practices,
@@ -244,10 +264,13 @@ class LearningController extends ChangeNotifier {
       points: completed.length * pointsPerPractice,
       rewardedPractices: completed.toList(),
       achievements: {
-        for (final id in eligible)
-          id: existing.containsKey(id)
-              ? existing[id]
-              : (historical ? null : DateTime.now().toUtc().toIso8601String()),
+        for (final a in Gamification.achievements)
+          if (eligible.contains(a.id))
+            a.id: existing.containsKey(a.id)
+                ? existing[a.id]
+                : (historical ? null : DateTime.now().toUtc().toIso8601String())
+          else if (existing.containsKey(a.id) && legacy.contains(a.id))
+            a.id: existing[a.id],
       },
       selectedTheme:
           theme ?? (historical ? state.selectedTheme : selectedTheme),

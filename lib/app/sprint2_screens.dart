@@ -128,18 +128,19 @@ class ActivitiesScreen extends StatelessWidget {
     final activities = [
       for (final module in controller.modules)
         for (final topic in module.topics)
-          if (topic.practice.steps.isNotEmpty)
-            ActivityDefinition(
-              id: topic.practice.id,
-              title: topic.practice.title,
-              moduleId: module.id,
-              moduleName: module.title,
-              topicId: topic.id,
-              topicName: topic.title,
-              requiredElementIds: {
-                for (var i = 0; i < topic.practice.steps.length; i++) '$i',
-              },
-            ),
+          for (final practice in topic.practices)
+            if (practice.steps.isNotEmpty)
+              ActivityDefinition(
+                id: practice.id,
+                title: practice.title,
+                moduleId: module.id,
+                moduleName: module.title,
+                topicId: topic.id,
+                topicName: topic.title,
+                requiredElementIds: {
+                  for (var i = 0; i < practice.steps.length; i++) '$i',
+                },
+              ),
     ];
     return Cu08ActivitiesPage(
       catalog: activities,
@@ -150,11 +151,15 @@ class ActivitiesScreen extends StatelessWidget {
       onOpenActivity: (activity) async {
         final topic = controller.modules
             .expand((m) => m.topics)
-            .firstWhere((t) => t.practice.id == activity.id);
+            .firstWhere((t) => t.id == activity.topicId);
+        final practice = topic.practices.firstWhere((p) => p.id == activity.id);
         await Navigator.of(context).push<void>(
           MaterialPageRoute(
-            builder: (_) =>
-                PracticeScreen(controller: controller, topic: topic),
+            builder: (_) => PracticeScreen(
+              controller: controller,
+              topic: topic,
+              practice: practice,
+            ),
           ),
         );
       },

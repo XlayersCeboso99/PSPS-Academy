@@ -67,7 +67,7 @@ void main() {
         'L-02': 'Responde todas las preguntas de un subtema.',
         'L-03': 'Realiza tu primera actividad.',
         'L-04': 'Realiza 5 actividades.',
-        'L-05': 'Realiza las 10 actividades.',
+        'L-05': 'Realiza todas las actividades.',
         'L-06': 'Completa el módulo «Estructuras y algoritmos».',
         'L-07': 'Completa el módulo «Programación y objetos».',
         'L-08': 'Completa el módulo «Datos y relaciones».',
