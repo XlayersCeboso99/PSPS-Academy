@@ -110,7 +110,7 @@ abstract final class Gamification {
     Achievement(
       'L-05',
       'Todas las prácticas',
-      'Realiza las 10 actividades.',
+      'Realiza todas las actividades.',
       rule: AchievementRule.allPractices,
     ),
     Achievement(
@@ -185,7 +185,8 @@ abstract final class Gamification {
   ) => {
     for (final m in modules)
       for (final t in m.topics)
-        if (complete(t.practice, orders)) t.practice.id,
+        for (final p in t.practices)
+          if (complete(p, orders)) p.id,
   };
 
   /// Calcula los hechos del avance a partir del estado guardado.
@@ -201,7 +202,7 @@ abstract final class Gamification {
     final questions = lessons.expand((l) => l.questions);
     final activities = modules
         .expand((m) => m.topics)
-        .map((t) => t.practice)
+        .expand((t) => t.practices)
         .where((p) => p.steps.isNotEmpty);
     return ProgressFacts(
       answeredQuestions: questions
