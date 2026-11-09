@@ -22,6 +22,8 @@ Ofrecer a estudiantes de Ingeniería de Software un recorrido breve y autónomo 
 | CU-08 | Consultar actividades por módulo y tema (Pendiente / Realizada). |
 | CU-09 | Buscar contenidos por palabra clave (títulos y contenido; sin acentos ni mayúsculas). |
 | CU-10 | Consultar puntos (10 por cada actividad completada por primera vez). |
+| CU-11 | Notas personales por subtema, guardadas solo en el dispositivo. |
+| CU-12 | Recordatorio de estudio semanal con notificaciones locales (sin Internet). |
 
 Catálogo actual: 4 módulos, 10 temas, 20 preguntas y 10 actividades. Detalle de reglas en [docs/USE_CASES.md](docs/USE_CASES.md).
 
@@ -98,7 +100,7 @@ Detalle y reglas de dependencia: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 | Plataforma | Estado |
 | --- | --- |
-| Android | Compila (`flutter build apk --debug` verificado el 06/11/2026). Pruebas en dispositivo tras la migración: **pendientes**. |
+| Android | Compila con CU-11/CU-12 (`flutter build apk --debug` verificado el 09/11/2026). Pruebas en dispositivo: **pendientes** (ver [docs/platforms/ANDROID.md](docs/platforms/ANDROID.md)). |
 | iOS | Proyecto presente, **no verificado** (requiere macOS/Xcode y firma). |
 | HarmonyOS NEXT | Objetivo del proyecto, **sin soporte todavía**; el Flutter oficial no ofrece ese destino. Ver [docs/SPRINT3_PREPARATION.md](docs/SPRINT3_PREPARATION.md). |
 | Web | Carpeta presente por la plantilla de Flutter; no es objetivo del proyecto. |
