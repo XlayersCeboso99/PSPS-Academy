@@ -88,7 +88,7 @@ void main() {
     }
     expect(
       LearningController(modules: catalog, store: MemoryStore()).practices,
-      hasLength(10),
+      orderedEquals(catalog.expand((m) => m.topics).expand((t) => t.practices)),
     );
     expect(Gamification.themes.map((t) => t.id), [
       'U-00',
@@ -137,8 +137,10 @@ void main() {
       Gamification.rewardMessage(c.newAchievements, c.newThemes),
       '¡Logro obtenido: Primer paso!',
     );
-    final other = lesson.questions[1];
-    await c.answer(other, other.correctIndex);
+    for (final other in lesson.questions.skip(1)) {
+      expect(c.earnedAchievements, isNot(contains('L-02')));
+      expect(await c.answer(other, other.correctIndex), isTrue);
+    }
     expect(c.newAchievements.map((a) => a.id), ['L-02']);
     final date = c.earnedAchievements['L-01'];
     final writes = store.writes;
@@ -243,8 +245,9 @@ void main() {
         }),
       );
       expect(c.earnedAchievements, {'L-01': null, 'L-03': null});
-      final other = lesson.questions[1];
-      await c.answer(other, other.correctIndex);
+      for (final other in lesson.questions.skip(1)) {
+        expect(await c.answer(other, other.correctIndex), isTrue);
+      }
       final d = DateTime.parse(c.earnedAchievements['L-02']!).toLocal();
       final writes = store.writes;
       final raw = store.raw;

@@ -66,17 +66,19 @@ void main() {
       expect(find.text('Sigue aprendiendo'), findsOneWidget);
       expect(c.answeredCount, 1);
       await shot('E04_respuesta_incorrecta');
-      await textTap('Siguiente pregunta');
-      final q2 = lesson.questions.last;
-      await textTap(q2.options[q2.correctIndex]);
-      await textTap('Comprobar');
-      expect(find.text('¡Respuesta correcta!'), findsOneWidget);
+      for (final question in lesson.questions.skip(1)) {
+        expect(c.lessonStatus(lesson), ProgressStatus.inProgress);
+        await textTap('Siguiente pregunta');
+        await textTap(question.options[question.correctIndex]);
+        await textTap('Comprobar');
+        expect(find.text('¡Respuesta correcta!'), findsOneWidget);
+      }
       expect(c.lessonStatus(lesson), ProgressStatus.completed);
       await shot('E05_subtema_completado');
       // Return through the actual navigation stack to the topic screen.
       await tap(find.byType(BackButton));
       await tap(find.byType(BackButton));
-      await textTap('Realizar actividad');
+      await tap(find.byKey(ValueKey('topic.practice.${topic.practice.id}')));
       for (final step in topic.practice.steps) {
         await tap(find.widgetWithText(OutlinedButton, step));
       }
@@ -84,14 +86,14 @@ void main() {
       expect(c.points, 10);
       await shot('E06_actividad_realizada');
     } else {
-      expect(c.answeredCount, 2);
+      expect(c.answeredCount, lesson.questions.length);
       expect(c.lessonStatus(lesson), ProgressStatus.completed);
       expect(c.completedPractices, 1);
       expect(c.points, 10);
       await textTap('Mi progreso');
       await shot('E07_progreso_tras_reabrir');
       await textTap(topic.title);
-      await textTap('Consultar actividad realizada');
+      await tap(find.byKey(ValueKey('topic.practice.${topic.practice.id}')));
       expect(find.text('¡Actividad realizada!'), findsOneWidget);
       expect(c.points, 10);
       await shot('E08_actividad_sin_duplicar');
