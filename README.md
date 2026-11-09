@@ -22,8 +22,10 @@ Ofrecer a estudiantes de Ingeniería de Software un recorrido breve y autónomo 
 | CU-08 | Consultar actividades por módulo y tema (Pendiente / Realizada). |
 | CU-09 | Buscar contenidos por palabra clave (títulos y contenido; sin acentos ni mayúsculas). |
 | CU-10 | Consultar puntos (10 por cada actividad completada por primera vez). |
+| CU-11 | Notas personales por subtema, guardadas solo en el dispositivo. |
+| CU-12 | Recordatorio de estudio semanal con notificaciones locales (sin Internet). |
 
-Catálogo actual: 4 módulos, 10 temas, 20 preguntas y 10 actividades. Detalle de reglas en [docs/USE_CASES.md](docs/USE_CASES.md).
+Catálogo actual: 4 módulos, 10 temas, 40 preguntas y 20 actividades (dos por tema). Los 30 identificadores del catálogo anterior se conservan; inventario en [docs/sprint3/CATALOGO_AMPLIADO.md](docs/sprint3/CATALOGO_AMPLIADO.md). Detalle de reglas en [docs/USE_CASES.md](docs/USE_CASES.md).
 
 ## Tecnologías
 
@@ -98,9 +100,9 @@ Detalle y reglas de dependencia: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 | Plataforma | Estado |
 | --- | --- |
-| Android | Compila (`flutter build apk --debug` verificado el 06/11/2026). Pruebas en dispositivo tras la migración: **pendientes**. |
-| iOS | Proyecto presente, **no verificado** (requiere macOS/Xcode y firma). |
-| HarmonyOS NEXT | Objetivo del proyecto, **sin soporte todavía**; el Flutter oficial no ofrece ese destino. Ver [docs/SPRINT3_PREPARATION.md](docs/SPRINT3_PREPARATION.md). |
+| Android | Compila con CU-11/CU-12 (`flutter build apk --debug` verificado el 09/11/2026). Pruebas en dispositivo: **pendientes** (ver [docs/platforms/ANDROID.md](docs/platforms/ANDROID.md)). |
+| iOS | Preparado en la rama `port/ios-sprint03` (delegado de notificaciones y guía para Mac en `docs/platforms/IOS.md`). **No compilado**: requiere macOS/Xcode y firma. |
+| HarmonyOS NEXT | Puerto preparado en la rama `port/harmonyos-next` (adaptador de recordatorios propio y plugin ArkTS, guía en `docs/platforms/HARMONYOS_NEXT.md`). **No compilado ni probado**: requiere el SDK Flutter-OH 3.35.7 (Dart 3.9) y DevEco Studio. |
 | Web | Carpeta presente por la plantilla de Flutter; no es objetivo del proyecto. |
 
 ## Procedencia
@@ -112,7 +114,7 @@ Migrado desde [`XlayersCeboso99/TSP_PSPS`](https://github.com/XlayersCeboso99/TS
 - Contenido educativo demostrativo; se edita en `lib/core/content/catalog.dart`.
 - Sin servidor, cuentas ni sincronización entre dispositivos.
 - La compilación *release* usa la firma *debug*; no apta para publicación en tienda.
-- iOS y HarmonyOS NEXT no verificados.
+- iOS y HarmonyOS NEXT preparados en ramas propias, sin compilar ni probar.
 - El catálogo admite módulos/temas vacíos que el SRS (RP-01) prohíbe; decisión pendiente.
 - Lista completa: [docs/MIGRATION_REPORT.md](docs/MIGRATION_REPORT.md#pendientes).
 
