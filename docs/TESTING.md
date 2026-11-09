@@ -11,7 +11,7 @@ verificación histórica.
 | Ruta | Alcance | Ejecución | Requiere dispositivo |
 | --- | --- | --- | --- |
 | `test/` | Pruebas unitarias y de widgets de CU-01…CU-10, incluidos los casos de regresión nuevos | `flutter test` | No |
-| `test/sprint3/` | CU-11 y CU-12 (ID 21: escenarios funcionales, de calidad, de fallo y de widgets) y aislamiento respecto del avance | `flutter test test/sprint3` | No |
+| `test/sprint3/` | CU-11 y CU-12 (ID 21: escenarios funcionales, de calidad, de fallo y de widgets), aislamiento respecto del avance, modelo de varias actividades por tema, conservación de logros y calidad del catálogo ampliado | `flutter test test/sprint3` | No |
 | `test/regression/` | Caracterización de formatos persistidos, recompensas, repaso, tema e inventario de IDs | `flutter test test/regression` | No |
 | `tool/verifications/` | Cinco verificaciones históricas de defectos del Sprint 1; fuera del descubrimiento automático de `test/` | `flutter test tool/verifications/defects_sprint01_verification_test.dart` | No |
 | `integration_test/` | Ocho objetivos sobre almacenamiento nativo, navegación y recorridos offline | Elegir un objetivo y un dispositivo; ver abajo | Sí |
