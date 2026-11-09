@@ -27,14 +27,14 @@ La posición de respuesta se expresa desde 1. El tema evaluado describe el objet
 | CT-05 · m3 | `CT-05.s1.q3` | ¿Qué instrucción consulta datos sin modificarlos? | SELECT | 2 | Consulta de datos frente a modificación. |
 | CT-05 · m3 | `CT-05.s1.q4` | ¿Qué ocurre al ejecutar DELETE FROM estudiante; sin una condición WHERE? | Se eliminan todas las filas de la tabla | 3 | Alcance de DELETE sin filtro. |
 | CT-06 · m2 | `CT-06.s1.q3` | Si el bloque try termina sin errores, ¿qué ocurre con catch y finally? | Catch no se ejecuta; finally sí | 2 | Flujo normal y limpieza de recursos. |
-| CT-06 · m2 | `CT-06.s1.q4` | ¿Cuál es la mejor práctica al capturar una excepción? | Informar el problema y dejar el sistema en un estado consistente | 3 | Manejo explícito de errores. |
+| CT-06 · m2 | `CT-06.s1.q4` | ¿Qué práctica es más adecuada al capturar una excepción en el ejemplo? | Informar el problema y dejar el sistema en un estado consistente | 3 | Manejo explícito de errores. |
 | CT-07 · m2 | `CT-07.s1.q3` | En Java, ¿qué palabra usa una interfaz para ampliar otra interfaz? | extends | 1 | Herencia entre interfaces. |
-| CT-07 · m2 | `CT-07.s1.q4` | Si una clase concreta implementa Coloreada pero solo define color(), ¿qué ocurre en Java? | No compila, salvo que la clase se declare abstracta | 3 | Cumplimiento del contrato heredado. |
+| CT-07 · m2 | `CT-07.s1.q4` | Una clase concreta implementa Coloreada, no hereda area() de ninguna otra clase y solo define color(). ¿Qué ocurre en Java? | No compila, salvo que la clase se declare abstracta | 3 | Cumplimiento del contrato heredado. |
 | CT-08 · m2 | `CT-08.s1.q3` | En el ejemplo, ¿qué es nombre? | Un atributo | 1 | Distinción entre estado y comportamiento. |
 | CT-08 · m2 | `CT-08.s1.q4` | Si cambias el nombre del objeto 1 a «Ana María», ¿qué ocurre con el objeto 2? | Conserva su nombre, Luis | 2 | Estado independiente de las instancias del ejemplo. |
 | CT-09 · m3 | `CT-09.s1.q3` | En el modelo, ¿qué es el identificador de un estudiante? | Un atributo | 1 | Atributos de una entidad. |
 | CT-09 · m3 | `CT-09.s1.q4` | Cada estudiante tiene exactamente una credencial y cada credencial pertenece a un solo estudiante. ¿Cuál es la cardinalidad? | Uno a uno | 2 | Cardinalidad con participación singular en ambos extremos. |
-| CT-10 · m4 | `CT-10.s1.q3` | ¿Por qué conviene que un mismo botón tenga el mismo nombre y lugar en todas las pantallas? | Por consistencia: la persona lo reconoce sin volver a aprenderlo | 1 | Consistencia de controles. |
+| CT-10 · m4 | `CT-10.s1.q3` | ¿Por qué conviene que un botón conserve su nombre y ubicación en pantallas equivalentes? | Por consistencia: la persona lo reconoce sin volver a aprenderlo | 1 | Consistencia de controles. |
 | CT-10 · m4 | `CT-10.s1.q4` | Si falla el guardado de una respuesta, ¿qué mensaje es más útil? | «No se pudo guardar tu respuesta. Intenta de nuevo.» con un botón Reintentar | 3 | Retroalimentación y recuperación ante errores. |
 
 Las posiciones correctas de las veinte preguntas nuevas se distribuyen entre las tres opciones: posición 1, siete preguntas; posición 2, siete; posición 3, seis. La prueba exige diversidad de posiciones, sin imponer una distribución estadística particular.
@@ -132,6 +132,14 @@ Los controles estructurales no detectaron enunciados repetidos, opciones equival
 | `CT-10.s1.q3` | «El mismo nombre y lugar en todas las pantallas» expresa la consistencia como una regla absoluta de ubicación. | Acotar a controles equivalentes dentro de contextos comparables; la pregunta no distingue cambios de disposición por tamaño de pantalla o contexto. La respuesta sobre reconocimiento sigue siendo pertinente. |
 | `CT-06.s1.q4` | «La mejor práctica» agrupa informar, registrar y recuperar un estado válido sin delimitar cuándo el código puede recuperarse. | Presentarlo como objetivo del manejo en el ejemplo, evitando sugerir que toda excepción debe resolverse localmente. Entre las alternativas ofrecidas, la clave es consistente con el texto del subtema. |
 | `CT-05.s1.q4` y `CT-05.a2` | La explicación de DELETE y la expresión «eliminar de forma segura» modelan una ejecución simple y exitosa. La actividad comprueba identidad antes y ausencia después, sin abordar fallos, concurrencia o reversión. | Delimitar el ejercicio a una tabla de ejemplo y al objetivo de filtrar por ID; no presentar esa secuencia introductoria como protocolo completo de seguridad de datos. |
+
+**Atención de observaciones.** Se precisó la redacción de `CT-07.s1.q4` (se
+indica que `area()` no se hereda de otra clase), `CT-10.s1.q3` (consistencia en
+pantallas equivalentes) y `CT-06.s1.q4` (práctica adecuada en el contexto del
+ejemplo). Los identificadores, las opciones y las respuestas correctas no
+cambiaron. La observación sobre `CT-05` se mantiene como alcance didáctico: la
+actividad es introductoria y no pretende describir un protocolo completo de
+seguridad de datos.
 
 Estas observaciones no demuestran una regresión del programa. La validación curricular y la eventual precisión del contenido requieren una revisión separada; la presente auditoría documenta las ambigüedades sin alterar `lib/`.
 

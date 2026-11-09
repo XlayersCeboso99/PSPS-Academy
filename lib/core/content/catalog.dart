@@ -307,7 +307,7 @@ final catalog = <CourseModule>[
             'Catch solo se ejecuta cuando se captura una excepción; finally se ejecuta en ambos casos.',
           ),
           (
-            '¿Cuál es la mejor práctica al capturar una excepción?',
+            '¿Qué práctica es más adecuada al capturar una excepción en el ejemplo?',
             [
               'Capturarla en un catch vacío para ocultarla',
               'Cerrar la aplicación ante cualquier error',
@@ -367,7 +367,7 @@ final catalog = <CourseModule>[
             'Una interfaz amplía otra con extends; una clase usa implements para cumplir un contrato.',
           ),
           (
-            'Si una clase concreta implementa Coloreada pero solo define color(), ¿qué ocurre en Java?',
+            'Una clase concreta implementa Coloreada, no hereda area() de ninguna otra clase y solo define color(). ¿Qué ocurre en Java?',
             [
               'Compila sin problema',
               'El compilador genera area() automáticamente',
@@ -611,7 +611,7 @@ final catalog = <CourseModule>[
             'El texto y el indicador visual comunican el estado sin depender solo del color.',
           ),
           (
-            '¿Por qué conviene que un mismo botón tenga el mismo nombre y lugar en todas las pantallas?',
+            '¿Por qué conviene que un botón conserve su nombre y ubicación en pantallas equivalentes?',
             [
               'Por consistencia: la persona lo reconoce sin volver a aprenderlo',
               'Para que la interfaz use menos colores',
