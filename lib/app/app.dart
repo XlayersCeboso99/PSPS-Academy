@@ -779,23 +779,43 @@ class TopicScreen extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 12),
-        caption('Actividad opcional. No afecta la finalización de este tema.'),
-        Text(topic.practice.title),
-        const SizedBox(height: 16),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton(
-            onPressed: () => openScreen(
-              context,
-              PracticeScreen(controller: controller, topic: topic),
-            ),
-            child: Text(
-              controller.practiceCompleted(topic.practice)
-                  ? 'Consultar actividad realizada'
-                  : 'Realizar actividad',
+        caption(
+          'Actividades opcionales. No afectan la finalización de este tema.',
+        ),
+        for (final practice in topic.practices.where(
+          (p) => p.steps.isNotEmpty,
+        )) ...[
+          const SizedBox(height: 12),
+          Text(
+            practice.title,
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
+          Text(
+            controller.practiceCompleted(practice)
+                ? 'Estado: realizada'
+                : 'Estado: sin realizar',
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              key: ValueKey('topic.practice.${practice.id}'),
+              onPressed: () => openScreen(
+                context,
+                PracticeScreen(
+                  controller: controller,
+                  topic: topic,
+                  practice: practice,
+                ),
+              ),
+              child: Text(
+                controller.practiceCompleted(practice)
+                    ? 'Consultar actividad realizada'
+                    : 'Realizar actividad',
+              ),
             ),
           ),
-        ),
+        ],
       ]),
     ],
   );
@@ -1183,15 +1203,20 @@ class PracticeScreen extends StatelessWidget {
     super.key,
     required this.controller,
     required this.topic,
+    this.practice,
   });
   final LearningController controller;
   final Topic topic;
+
+  /// Actividad del tema que se realiza. Si se omite, la actividad principal.
+  final Practice? practice;
   @override
   Widget build(BuildContext context) => ScreenFrame(
     title: 'Actividad interactiva',
     controller: controller,
     content: (context) {
-      final p = topic.practice;
+      // Sin actividad indicada se abre la actividad principal del tema.
+      final p = practice ?? topic.practice;
       final order = controller.orderFor(p);
       final complete = controller.practiceCompleted(p);
       final full = order.length == p.steps.length;

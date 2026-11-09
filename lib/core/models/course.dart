@@ -88,11 +88,20 @@ class Topic {
     required this.title,
     required this.lessons,
     required this.practice,
+    this.extraPractices = const [],
   });
   final String id;
   final String title;
   final List<Lesson> lessons;
+
+  /// Actividad principal del tema (`<tema>.a1`).
   final Practice practice;
+
+  /// Actividades adicionales del tema (`<tema>.a2`, `<tema>.a3`, …).
+  final List<Practice> extraPractices;
+
+  /// Todas las actividades del tema: la principal y las adicionales, en orden.
+  List<Practice> get practices => [practice, ...extraPractices];
 }
 
 class CourseModule {

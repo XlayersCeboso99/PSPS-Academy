@@ -93,6 +93,9 @@ class ActivityEngine {
       }
 
       // ÚNICAMENTE logros que se disparan por actividades según MR-09.
+      // Se cuentan todas las actividades del catálogo actual (todas las de
+      // cada tema). Los logros ya registrados se conservan con su fecha y
+      // ninguno se otorga por el catálogo legado.
       grant('L-03', count >= 1);
       grant('L-04', count >= 5);
       grant('L-05', count == _activities.length && _activities.isNotEmpty);

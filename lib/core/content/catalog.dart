@@ -11,8 +11,9 @@ Topic _topic(
   List<(String, List<String>, int, String)> questions,
   String practiceTitle,
   String instruction,
-  List<String> steps,
-) => Topic(
+  List<String> steps, {
+  List<(String, String, List<String>)> extraPractices = const [],
+}) => Topic(
   id: id,
   title: title,
   lessons: [
@@ -39,6 +40,15 @@ Topic _topic(
     instruction: instruction,
     steps: steps,
   ),
+  extraPractices: [
+    for (var i = 0; i < extraPractices.length; i++)
+      Practice(
+        id: '$id.a${i + 2}',
+        title: extraPractices[i].$1,
+        instruction: extraPractices[i].$2,
+        steps: extraPractices[i].$3,
+      ),
+  ],
 );
 
 final catalog = <CourseModule>[
