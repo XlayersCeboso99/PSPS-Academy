@@ -10,6 +10,13 @@ class FeatureLinks extends StatelessWidget {
       spacing: 10,
       runSpacing: 10,
       children: [
+        if (NotesScope.maybeOf(context) != null)
+          OutlinedButton.icon(
+            icon: const Icon(Icons.notes),
+            label: const Text('Mis notas'),
+            onPressed: () =>
+                openScreen(context, NotesScreen(controller: controller)),
+          ),
         OutlinedButton.icon(
           icon: const Icon(Icons.extension_outlined),
           label: const Text('Actividades'),
