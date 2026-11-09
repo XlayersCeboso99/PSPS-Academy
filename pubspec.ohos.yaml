@@ -1,0 +1,47 @@
+# Variante de preparación, NO validada con Flutter-OH.
+# Copiar sobre pubspec.yaml SOLO en un checkout del entorno Flutter-OH 3.35.7.
+# No cambiar el manifiesto ni el lockfile de la rama Android/iOS.
+name: psps
+description: Aplicación educativa offline de Ingeniería de Software con diseño del Sprint 2.
+publish_to: 'none'
+version: 0.2.0+5
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  cupertino_icons: 1.0.9
+  flutter:
+    sdk: flutter
+  # 2.5.6 local exige Dart ^3.11.0 y Flutter >=3.41.0; sustituido por el tag OHOS.
+  shared_preferences: ^2.5.6
+  flutter_local_notifications: 20.1.0
+  flutter_timezone: 5.1.0
+  timezone: ^0.10.1
+  app_settings: 7.0.0
+
+dependency_overrides:
+  shared_preferences:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages.git
+      path: packages/shared_preferences/shared_preferences
+      ref: shared_preferences-v2.5.4-ohos-1.0.1
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+# Los otros requisitos Dart/Flutter directos inspeccionados aceptan 3.9/3.35.
+# timezone 0.10.1 local declara >=2.19.0 <3.0.0: Pub en Dart 3 reinterpreta
+# ese límite superior para paquetes null-safe (guía oficial de migración Dart 3).
+# Las transitivas se deben resolver de nuevo con Flutter-OH: el lockfile normal
+# incluye paquetes para Flutter >=3.44.0. Ver matriz y límites en
+# docs/platforms/HARMONYOS_NEXT.md; no se ejecutó pub get con esta variante.
