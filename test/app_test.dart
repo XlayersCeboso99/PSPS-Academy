@@ -47,9 +47,17 @@ void main() {
       await tapVisible(tester, find.text('Comprobar'));
       expect(find.text('Sigue aprendiendo'), findsOneWidget);
       expect(c.answeredCount, 1);
-      await tapVisible(tester, find.text('Siguiente pregunta'));
-      await tapVisible(tester, find.text('7'));
-      await tapVisible(tester, find.text('Comprobar'));
+      final lesson = catalog.first.topics.first.lessons.first;
+      for (final question in lesson.questions.skip(1)) {
+        expect(c.lessonStatus(lesson), ProgressStatus.inProgress);
+        await tapVisible(tester, find.text('Siguiente pregunta'));
+        await tapVisible(
+          tester,
+          find.text(question.options[question.correctIndex]),
+        );
+        await tapVisible(tester, find.text('Comprobar'));
+      }
+      expect(c.answeredCount, lesson.questions.length);
       expect(
         c.lessonStatus(catalog.first.topics.first.lessons.first),
         ProgressStatus.completed,
