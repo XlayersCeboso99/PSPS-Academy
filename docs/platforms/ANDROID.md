@@ -1,4 +1,4 @@
-# Android — CU-11 y CU-12 (Sprint 3)
+# Android — CU-11, CU-12 y catálogo del Sprint 3
 
 Identificador: `mx.edu.uaz.psps` (sin cambios). SDK de compilación, mínimo y
 objetivo: los que define Flutter 3.47.9 (`flutter.compileSdkVersion`,
@@ -52,6 +52,7 @@ la app: ejecutarlas solo en un dispositivo o perfil de pruebas.
 | --- | --- | --- |
 | `flutter analyze` | Sin incidencias | 09/11/2026 |
 | `flutter test` (rama de integración CU-11/CU-12) | 196 aprobadas | 09/11/2026 |
+| `flutter test` (con catálogo ampliado) | 216 aprobadas | 09/11/2026 |
 | Verificaciones del Sprint 1 | 5 aprobadas | 09/11/2026 |
 | `flutter build apk --debug` | Compila (tras fijar `app_settings 7.0.0`) | 09/11/2026 |
 | Pruebas en dispositivo | **No ejecutadas** (ver §4) | — |
@@ -65,6 +66,7 @@ aprobada hasta registrarla con evidencia.
 **Actualización y datos**
 
 - [ ] Instalar con `adb install -r` sobre una instalación del Sprint 2 con avance, puntos, logros y tema: todo se conserva.
+- [ ] Con el catálogo ampliado, los logros obtenidos antes (incluido L-05) se conservan con su fecha y los puntos no cambian hasta completar actividades nuevas.
 - [ ] Reiniciar el teléfono: avance, notas y recordatorio persisten.
 
 **CU-11**

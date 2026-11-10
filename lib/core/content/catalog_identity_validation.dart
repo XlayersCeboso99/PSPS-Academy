@@ -19,8 +19,10 @@ void validateCatalog(List<CourseModule> modules) {
     unique(module.id, moduleIds, 'módulo');
     for (final topic in module.topics) {
       unique(topic.id, topicIds, 'tema');
-      if (topic.practice.steps.isNotEmpty) {
-        unique(topic.practice.id, practiceIds, 'actividad');
+      for (final practice in topic.practices) {
+        if (practice.steps.isNotEmpty) {
+          unique(practice.id, practiceIds, 'actividad');
+        }
       }
       for (final lesson in topic.lessons) {
         unique(lesson.id, lessonIds, 'subtema');

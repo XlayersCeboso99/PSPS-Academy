@@ -29,7 +29,11 @@ void main() {
     expect(controller.answerFor(first), wrong);
     expect(controller.answeredCount, 1);
     expect(store.writes, 1);
-    await controller.answer(lesson.questions.last, 0);
+    for (final question in lesson.questions.skip(1)) {
+      expect(controller.lessonStatus(lesson), ProgressStatus.inProgress);
+      await controller.answer(question, 0);
+    }
+    expect(controller.answeredCount, lesson.questions.length);
     expect(controller.lessonStatus(lesson), ProgressStatus.completed);
     expect(
       controller.topicStatus(catalog.first.topics.first),

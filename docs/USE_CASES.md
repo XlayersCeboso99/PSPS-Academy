@@ -9,6 +9,7 @@ Los documentos de requisitos originales (SRS v0.1, diseños de Sprint 2) están 
 - **Offline:** contenido, búsqueda y progreso son locales; la app no usa red.
 - **Persistencia:** el avance es un único estado JSON en `SharedPreferences`, clave `psps.progress.v1`, `version` 3. Las notas (CU-11) y el recordatorio (CU-12) usan claves propias e independientes, `psps.notes.v1` y `psps.reminder.v1`; ninguna de esas funciones lee ni escribe el avance. Se recuperan formatos 1 y 2 sin escribir hasta la siguiente acción. Si guardar falla, el estado anterior se conserva y se informa el error.
 - **Primera respuesta:** cuenta la primera respuesta de cada pregunta; responder de nuevo actualiza la retroalimentación pero no cuenta otra vez (RP-02, H-01).
+- **Catálogo:** 4 módulos, 10 temas, 40 preguntas (4 por subtema) y 20 actividades (2 por tema: `CT-xx.a1` y `CT-xx.a2`). Las actividades son opcionales: el estado de subtema, tema y módulo depende solo de las preguntas.
 - **G-01:** 10 puntos por cada actividad completada por primera vez y guardada; nunca por repetir, consultar, repasar ni por logros.
 - **Consultar no escribe:** progreso, actividades, logros, puntos y búsqueda no modifican el estado.
 
@@ -18,7 +19,7 @@ El estudiante abre un subtema, lee contenido y ejemplo, responde sus preguntas y
 
 ## CU-02 Realizar actividades opcionales
 
-Ordenar pasos en la secuencia correcta. El orden de presentación es mezclado y estable (D-S1-02). Al completar correctamente se registra automáticamente y se otorgan 10 puntos una sola vez; un orden parcial o incorrecto no da premio. Las actividades no bloquean temas ni módulos. Código: `PracticeScreen`, `LearningController.saveOrder`, `Practice.presentationOrder`.
+Ordenar pasos en la secuencia correcta. Cada tema ofrece dos actividades, listadas en la pantalla del tema con su estado. El orden de presentación es mezclado y estable (D-S1-02). Al completar correctamente se registra automáticamente y se otorgan 10 puntos una sola vez; un orden parcial o incorrecto no da premio. Las actividades no bloquean temas ni módulos. Código: `PracticeScreen`, `LearningController.saveOrder`, `Practice.presentationOrder`.
 
 ## CU-03 Consultar progreso
 
@@ -34,7 +35,7 @@ Inicio muestra los 4 módulos; cada módulo sus temas y subtemas. Navegación li
 
 ## CU-06 Consultar logros
 
-Diez logros: L-01 Primer paso, L-02 Subtema completo, L-03 Manos a la obra, L-04 Práctica constante, L-05 Todas las prácticas, L-06 a L-09 (un módulo completo cada uno), L-11 Recorrido completo. Se muestran con condición y fecha de obtención; el aviso de premio aparece una vez. Temas visuales: U-00 Bosque (inicial), U-01 Océano (L-03), U-02 Atardecer (cualquiera de L-06…L-09), U-03 Noche (L-11). Un tema bloqueado no se puede elegir; el elegido persiste. **L-10 no existe** en el catálogo vigente. Código: `Gamification` (`lib/core/learning/gamification.dart`), `AchievementsScreen`.
+Diez logros: L-01 Primer paso, L-02 Subtema completo, L-03 Manos a la obra, L-04 Práctica constante, L-05 Todas las prácticas (todas las actividades del catálogo vigente), L-06 a L-09 (un módulo completo cada uno), L-11 Recorrido completo. Se muestran con condición y fecha de obtención; el aviso de premio aparece una vez. Temas visuales: U-00 Bosque (inicial), U-01 Océano (L-03), U-02 Atardecer (cualquiera de L-06…L-09), U-03 Noche (L-11). Un tema bloqueado no se puede elegir; el elegido persiste. **L-10 no existe** en el catálogo vigente. **Conservación tras ampliar el catálogo (Sprint 3):** un logro ya guardado se conserva, con su fecha, si se cumple con el catálogo vigente o con el catálogo anterior a la ampliación (20 preguntas, 10 actividades; `lib/core/content/catalog_legacy.dart`); los logros nuevos solo se otorgan con el catálogo vigente. Un logro guardado que no se cumple en ninguno de los dos hace fallar la carga sin modificar los datos. Código: `Gamification` (`lib/core/learning/gamification.dart`), `AchievementsScreen`.
 
 ## CU-07 Repasar respuestas incorrectas
 

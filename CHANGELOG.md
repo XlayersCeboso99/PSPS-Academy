@@ -12,6 +12,15 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/). L
 - Android: permisos `POST_NOTIFICATIONS` y `RECEIVE_BOOT_COMPLETED`, receptores de notificaciones programadas y de reinicio, *core library desugaring*.
 - Documentación: CU-11/CU-12 en `docs/USE_CASES.md`, trazabilidad en `docs/sprint3/TRAZABILIDAD_CU11_CU12.md` y guía `docs/platforms/ANDROID.md`.
 
+- Catálogo ampliado a 40 preguntas y 20 actividades: dos preguntas nuevas por subtema (`CT-xx.s1.q3`, `CT-xx.s1.q4`) y una actividad adicional por tema (`CT-xx.a2`). Los 30 identificadores anteriores y sus textos se conservan.
+- Modelo con varias actividades por tema (`Topic.extraPractices`, `Topic.practices`), compatible con el formato guardado `version` 3.
+- `lib/core/content/catalog_legacy.dart`: identificadores congelados del catálogo anterior y regla de conservación de logros ya obtenidos.
+- Pruebas `test/sprint3/multi_activity_model_test.dart` y `test/sprint3/catalog_expansion_test.dart`; inventario y caracterización de `test/regression/` adaptados al catálogo ampliado.
+
+### Cambiado
+- L-05 «Todas las prácticas» exige todas las actividades del catálogo vigente (antes, las 10). Quien ya lo había obtenido lo conserva.
+- Al publicarse preguntas nuevas, un subtema completado antes pasa a «En progreso» hasta responderlas; las respuestas, puntos y logros guardados no cambian.
+
 ### Corregido
 - `app_settings` 6.1.1 (versión del origen) compila contra Android API 33 y hacía fallar `assembleDebug` (`checkDebugAarMetadata`); se fijó la 7.0.0, que compila contra API 36 y mantiene la misma API y el soporte de CocoaPods.
 

@@ -10,7 +10,7 @@ import 'package:psps/core/models/course.dart';
 /// preguntas, preguntas con menos de dos opciones o con la respuesta correcta
 /// fuera de rango y actividades configuradas con menos de dos elementos.
 /// Las estructuras vacías (catálogo, módulo sin temas, tema sin subtemas o
-/// sin actividad) no se rechazan: se muestran con su estado vacío (CU-05,
+/// sin actividades) no se rechazan: se muestran con su estado vacío (CU-05,
 /// CU-08).
 List<String> validateCatalog(List<CourseModule> modules) {
   final errors = <String>[];
@@ -36,7 +36,9 @@ List<String> validateCatalog(List<CourseModule> modules) {
         for (final question in lesson.questions) {
           checkId(question.id, 'Pregunta');
           if (question.options.length < 2) {
-            errors.add('La pregunta ${question.id} tiene menos de dos opciones');
+            errors.add(
+              'La pregunta ${question.id} tiene menos de dos opciones',
+            );
           }
           if (question.correctIndex < 0 ||
               question.correctIndex >= question.options.length) {
@@ -46,11 +48,13 @@ List<String> validateCatalog(List<CourseModule> modules) {
           }
         }
       }
-      final practice = topic.practice;
-      if (practice.steps.isNotEmpty) {
+      for (final practice in topic.practices) {
+        if (practice.steps.isEmpty) continue;
         checkId(practice.id, 'Actividad');
         if (practice.steps.length < 2) {
-          errors.add('La actividad ${practice.id} tiene menos de dos elementos');
+          errors.add(
+            'La actividad ${practice.id} tiene menos de dos elementos',
+          );
         }
       }
     }
