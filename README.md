@@ -62,6 +62,15 @@ flutter build apk --debug
 
 En Windows, si Gradle falla por `PKIX`/`certificate_unknown`, usa `.\tool\build_android.ps1` (ver [docs/SETUP.md](docs/SETUP.md)).
 
+En Windows, diagnóstico y ejecución en Android con un solo comando (no necesita `adb` en el `PATH`):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tool\doctor_android.ps1   # añade -Repair para reparar ADB con confirmación
+powershell -ExecutionPolicy Bypass -File tool\run_android.ps1      # o -DeviceId <id>
+```
+
+Si ves `adb server version (40) doesn't match this client (41)` o `Android null (unsupported)`, otro programa (por ejemplo SuperDisplay) ejecuta un ADB antiguo: ver [docs/SETUP.md](docs/SETUP.md#adb-server-version-40-doesnt-match-this-client-41--android-null-unsupported).
+
 ## Pruebas
 
 ```bash
