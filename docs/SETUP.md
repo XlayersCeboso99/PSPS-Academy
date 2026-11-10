@@ -67,4 +67,4 @@ Requiere macOS con Xcode, CocoaPods y una cuenta de firma. El proyecto `ios/` ex
 
 ## 7. Datos locales
 
-La app guarda todo en `SharedPreferences` bajo la clave `psps.progress.v1` (JSON versionado 1–3). Para empezar de cero en un dispositivo, borra los datos de la app desde los ajustes de Android. **No** cambies el `applicationId` (`mx.edu.uaz.psps`): una instalación con otro identificador no ve los datos previos.
+La app guarda todo en `SharedPreferences`: el avance bajo `psps.progress.v1` (JSON versionado 1–3), las notas bajo `psps.notes.v1` y el recordatorio bajo `psps.reminder.v1`. Para empezar de cero en un dispositivo, borra los datos de la app desde los ajustes de Android. **No** cambies el `applicationId` (`mx.edu.uaz.psps`): una instalación con otro identificador no ve los datos previos.
