@@ -25,6 +25,33 @@ Instrucciones reproducibles para preparar una máquina nueva. Verificadas en Win
 
 El proyecto usa Gradle 9.3.1 (descargado por el *wrapper*), AGP 9.1.0, Kotlin 2.4.0 y Java 17. `android/gradlew`, `gradlew.bat`, `gradle-wrapper.jar` y `local.properties` **no se versionan**: Flutter los regenera en la primera compilación (comprobado en la migración).
 
+### Diagnóstico automático (Windows)
+
+Requisitos que el repositorio no puede instalar por ti: **Flutter**, **Android SDK** (con Platform-Tools), **JDK 17+** (el de Android Studio sirve) y un **dispositivo con depuración USB o un emulador**. No hace falta tener `adb` en el `PATH`.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tool\doctor_android.ps1          # solo diagnostica, no cambia nada
+powershell -ExecutionPolicy Bypass -File tool\doctor_android.ps1 -Repair  # repara ADB, pidiendo confirmación
+powershell -ExecutionPolicy Bypass -File tool\run_android.ps1             # diagnostica, elige el dispositivo y ejecuta
+powershell -ExecutionPolicy Bypass -File tool\run_android.ps1 -DeviceId <id>
+```
+
+(Si tu política de ejecución ya permite scripts locales, basta `.\tool\run_android.ps1`.)
+
+El diagnóstico usa el SDK y el JDK que Flutter tiene configurados (`flutter config --machine`), consulta el servidor ADB con su protocolo nativo **sin reiniciarlo** y revisa versiones de ADB duplicadas, servicios que lanzan su propio ADB y el estado de cada dispositivo (`device`, `unauthorized`, `offline`). `-Repair` solo detiene un servicio o reinicia el servidor ADB tras confirmación; nunca borra archivos del SDK, desinstala aplicaciones, cambia variables globales ni el tipo de inicio de un servicio. `run_android.ps1` fija `ANDROID_HOME` solo para su propio proceso.
+
+### `adb server version (40) doesn't match this client (41)` / `Android null (unsupported)`
+
+Significa que **otro programa** ejecuta un ADB antiguo en el puerto 5037. Cada vez que Flutter (ADB 1.0.41) lo reemplaza, el otro programa lo vuelve a lanzar: aparecen `connection reset`, dos `adb.exe` y los dispositivos como `Android null`, o `flutter run` termina con `Lost connection to device`. No es un problema del proyecto, y matar los procesos solo lo arregla unos segundos.
+
+Causa encontrada el 09/11/2026: el servicio de Windows **SuperDisplay** (`MirrorService.exe`, inicio automático, cuenta LocalSystem) incluye `C:\Program Files\SuperDisplay\adb\adb.exe` 1.0.40 (2019). `doctor_android.ps1` detecta este caso y, en general, cualquier servicio con un `adb.exe` junto a su ejecutable. Soluciones, de menor a mayor impacto:
+
+1. Mientras desarrollas, detén el servicio desde PowerShell **como administrador**: `Stop-Service SuperDisplay` (al terminar: `Start-Service SuperDisplay`). `doctor_android.ps1 -Repair` lo hace por ti si la consola es de administrador.
+2. Si no usas SuperDisplay a diario, cambia su inicio a *Manual* en `services.msc`.
+3. Opcional, bajo tu responsabilidad: haz una copia de `C:\Program Files\SuperDisplay\adb\` y sustituye `adb.exe`, `AdbWinApi.dll` y `AdbWinUsbApi.dll` por los de `platform-tools` del SDK, para que ambos usen la misma versión.
+
+Otros programas que suelen traer su propio ADB: herramientas de *mirroring* (Vysor, scrcpy antiguos), gestores de teléfonos y el SDK de Visual Studio/Xamarin (`C:\Program Files (x86)\Android\android-sdk`). Además, si varias herramientas o agentes ejecutan `adb` o `flutter devices` a la vez con versiones distintas, se producen los mismos reinicios.
+
 ## 3. Obtener el proyecto
 
 ```bash
@@ -40,6 +67,8 @@ flutter pub get
 ```bash
 flutter run -d <identificador>
 ```
+
+En Windows, `tool\run_android.ps1` hace el diagnóstico, elige el dispositivo y ejecuta `flutter pub get --enforce-lockfile` y `flutter run` (ver la sección 2).
 
 Con VS Code o Android Studio abre la carpeta raíz del repositorio, elige el dispositivo y ejecuta `lib/main.dart`.
 
