@@ -8,63 +8,119 @@ import 'package:psps/features/activities/activity_store.dart';
 import 'package:psps/features/activities/activity_engine.dart';
 import 'package:psps/features/activities/activity_models.dart';
 import 'package:psps/features/activities/activity_page.dart';
+import 'package:psps/features/notes/notes_controller.dart';
+import 'package:psps/features/notes/notes_store.dart';
+import 'package:psps/features/reminders/adapters/notification_port_factory.dart';
+import 'package:psps/features/reminders/reminder_controller.dart';
+import 'package:psps/features/reminders/reminder_store.dart';
 
 part 'review_screens.dart';
 part 'sprint2_screens.dart';
+part 'notes_screens.dart';
+part 'reminder_screens.dart';
 
 const forest = Color(0xFF164E3C);
 const cream = Color(0xFFF6F7F2);
 const ink = Color(0xFF182C25);
 
-class PspsApp extends StatelessWidget {
-  const PspsApp({super.key, required this.controller});
+class PspsApp extends StatefulWidget {
+  const PspsApp({
+    super.key,
+    required this.controller,
+    this.notesController,
+    this.reminderController,
+  });
   final LearningController controller;
+  final NotesController? notesController;
+  final ReminderController? reminderController;
   @override
-  Widget build(BuildContext context) => AnimatedBuilder(
-    animation: controller,
-    builder: (context, _) => MaterialApp(
-      title: 'PSPS Academy · Aprende software',
-      debugShowCheckedModeBanner: false,
-      theme: academyTheme(controller.selectedTheme),
-      home: AnimatedBuilder(
+  State<PspsApp> createState() => _PspsAppState();
+}
+
+class _PspsAppState extends State<PspsApp> {
+  late final NotesController notes;
+  late final ReminderController reminder;
+  final navigatorKey = GlobalKey<NavigatorState>();
+  LearningController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    notes =
+        widget.notesController ??
+        NotesController(modules: controller.modules, store: LocalNotesStore());
+    if (!notes.ready) notes.load();
+    reminder =
+        widget.reminderController ??
+        ReminderController(
+          store: LocalReminderStore(),
+          port: createNotificationPort(),
+          onOpened: () =>
+              navigatorKey.currentState?.popUntil((route) => route.isFirst),
+        );
+    if (!reminder.ready) reminder.load();
+  }
+
+  @override
+  void dispose() {
+    if (widget.notesController == null) notes.dispose();
+    if (widget.reminderController == null) reminder.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => ReminderScope(
+    controller: reminder,
+    child: NotesScope(
+      controller: notes,
+      child: AnimatedBuilder(
         animation: controller,
-        builder: (context, _) {
-          if (controller.ready) return HomeScreen(controller: controller);
-          return Scaffold(
-            body: SafeArea(
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: controller.loadError == null
-                      ? const Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 20),
-                            Text('Preparando tu recorrido…'),
-                          ],
-                        )
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.cloud_off_rounded, size: 48),
-                            const SizedBox(height: 20),
-                            Text(
-                              controller.loadError!,
-                              textAlign: TextAlign.center,
+        builder: (context, _) => MaterialApp(
+          navigatorKey: navigatorKey,
+          title: 'PSPS Academy · Aprende software',
+          debugShowCheckedModeBanner: false,
+          theme: academyTheme(controller.selectedTheme),
+          home: AnimatedBuilder(
+            animation: controller,
+            builder: (context, _) {
+              if (controller.ready) return HomeScreen(controller: controller);
+              return Scaffold(
+                body: SafeArea(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: controller.loadError == null
+                          ? const Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                CircularProgressIndicator(),
+                                SizedBox(height: 20),
+                                Text('Preparando tu recorrido…'),
+                              ],
+                            )
+                          : Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.cloud_off_rounded, size: 48),
+                                const SizedBox(height: 20),
+                                Text(
+                                  controller.loadError!,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(height: 20),
+                                FilledButton(
+                                  onPressed: controller.load,
+                                  child: const Text('Reintentar'),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 20),
-                            FilledButton(
-                              onPressed: controller.load,
-                              child: const Text('Reintentar'),
-                            ),
-                          ],
-                        ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          );
-        },
+              );
+            },
+          ),
+        ),
       ),
     ),
   );
@@ -315,6 +371,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           actions: [
+            IconButton(
+              tooltip: 'Recordatorio de estudio',
+              icon: const Icon(Icons.alarm_outlined),
+              onPressed: () => openScreen(context, const ReminderScreen()),
+            ),
             IconButton(
               tooltip: 'Buscar contenidos',
               icon: const Icon(Icons.search),
@@ -747,17 +808,33 @@ class LessonScreen extends StatefulWidget {
     required this.module,
     required this.topic,
     required this.lesson,
+    this.openNote = false,
   });
   final LearningController controller;
   final CourseModule module;
   final Topic topic;
   final Lesson lesson;
+  final bool openNote;
   @override
   State<LessonScreen> createState() => _LessonScreenState();
 }
 
 class _LessonScreenState extends State<LessonScreen> {
   int page = 0;
+  bool noteOpened = false;
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.openNote && !noteOpened) {
+      noteOpened = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          openScreen(context, NoteEditorScreen(lesson: widget.lesson));
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) => ScreenFrame(
     title: widget.lesson.title,
@@ -774,6 +851,19 @@ class _LessonScreenState extends State<LessonScreen> {
         ],
       ),
       const SizedBox(height: 24),
+      if (NotesScope.maybeOf(context) != null) ...[
+        OutlinedButton.icon(
+          icon: const Icon(Icons.edit_note),
+          label: Text(
+            NotesScope.maybeOf(context)!.noteFor(widget.lesson) == null
+                ? 'Agregar nota'
+                : 'Ver mi nota',
+          ),
+          onPressed: () =>
+              openScreen(context, NoteEditorScreen(lesson: widget.lesson)),
+        ),
+        const SizedBox(height: 12),
+      ],
       panel([
         Icon(
           page == 0 ? Icons.lightbulb_outline_rounded : Icons.code_rounded,

@@ -1,4 +1,4 @@
-# Casos de uso CU-01 a CU-10
+# Casos de uso CU-01 a CU-12
 
 Descripción del comportamiento **implementado** en `0.2.0+5`, tal como lo fijan el código y las pruebas. La trazabilidad completa (contratos de origen, pruebas y evidencias históricas, huecos) está en [audit/TRAZABILIDAD_CU01_CU10.md](audit/TRAZABILIDAD_CU01_CU10.md). Rutas según la estructura de [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -7,7 +7,7 @@ Los documentos de requisitos originales (SRS v0.1, diseños de Sprint 2) están 
 ## Reglas transversales
 
 - **Offline:** contenido, búsqueda y progreso son locales; la app no usa red.
-- **Persistencia:** un único estado JSON en `SharedPreferences`, clave `psps.progress.v1`, `version` 3. Se recuperan formatos 1 y 2 sin escribir hasta la siguiente acción. Si guardar falla, el estado anterior se conserva y se informa el error.
+- **Persistencia:** el avance es un único estado JSON en `SharedPreferences`, clave `psps.progress.v1`, `version` 3. Las notas (CU-11) y el recordatorio (CU-12) usan claves propias e independientes, `psps.notes.v1` y `psps.reminder.v1`; ninguna de esas funciones lee ni escribe el avance. Se recuperan formatos 1 y 2 sin escribir hasta la siguiente acción. Si guardar falla, el estado anterior se conserva y se informa el error.
 - **Primera respuesta:** cuenta la primera respuesta de cada pregunta; responder de nuevo actualiza la retroalimentación pero no cuenta otra vez (RP-02, H-01).
 - **G-01:** 10 puntos por cada actividad completada por primera vez y guardada; nunca por repetir, consultar, repasar ni por logros.
 - **Consultar no escribe:** progreso, actividades, logros, puntos y búsqueda no modifican el estado.
@@ -52,6 +52,14 @@ Búsqueda local a partir de 3 caracteres, mientras se escribe. Ignora mayúscula
 
 Muestra el total local de puntos (cero real si no hay recompensas). Mientras carga o si la lectura falla no muestra un cero falso; permite reintentar sin reiniciar datos. No hay historial de transacciones. Código: `PointsScreen`, `LearningController.points`.
 
+## CU-11 Gestionar notas personales
+
+El estudiante agrega, consulta, edita y elimina una nota de texto por subtema, sin conexión. Desde el subtema se usa «Agregar nota» o «Ver mi nota»; desde Inicio, «Mis notas» lista las notas ordenadas de la más reciente a la más antigua con su ruta módulo → tema y fecha, y al tocar una se abre el subtema con su nota. Reglas: texto no vacío de hasta 1 000 caracteres; salir con cambios sin guardar pide confirmación; eliminar pide confirmación; si guardar o eliminar falla, la nota anterior se conserva y se informa el error; una nota corrupta en almacenamiento muestra un error recuperable con «Reintentar» y no afecta al avance. Persistencia: `psps.notes.v1` (JSON `version` 1, nota por id de subtema, fecha en UTC). Código: `lib/features/notes/`, `lib/app/notes_screens.dart`.
+
+## CU-12 Configurar recordatorio de estudio
+
+El estudiante activa o desactiva un único recordatorio semanal local y elige hora (24 h) y días de la semana. El permiso de notificaciones se solicita solo al activar el recordatorio; si se niega, se informa y se ofrece abrir los ajustes del teléfono. La configuración se guarda antes de programar; si la programación falla, se restauran la configuración y los avisos anteriores sin anunciar éxito; si la restauración del almacenamiento también falla, la pantalla se bloquea hasta recargar. Cada día usa un identificador fijo (`1201`–`1207`), por lo que reprogramar reemplaza sin duplicar y los días retirados se cancelan. Al iniciar, la configuración guardada es la fuente de verdad y se reconcilia con los avisos del sistema; si el recordatorio está activo pero el permiso fue retirado, se muestra un aviso en lugar de reprogramar. Tocar la notificación abre la app en Inicio. El aviso aparece aunque el estudiante ya haya estudiado ese día. Persistencia: `psps.reminder.v1`. Código: `lib/features/reminders/` (interfaz `NotificationPort`, adaptador Android/iOS en `adapters/`), `lib/app/reminder_screens.dart`.
+
 ## Fuera de alcance
 
-CU-11 y CU-12 no están implementados (planificados para Sprint 3 o posteriores).
+Sincronización entre dispositivos, notificaciones remotas (push) y recordatorios adaptativos según el avance.
