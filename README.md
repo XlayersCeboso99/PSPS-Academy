@@ -101,7 +101,7 @@ Detalle y reglas de dependencia: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Plataforma | Estado |
 | --- | --- |
 | Android | Compila con CU-11/CU-12 (`flutter build apk --debug` verificado el 09/11/2026). Pruebas en dispositivo: **pendientes** (ver [docs/platforms/ANDROID.md](docs/platforms/ANDROID.md)). |
-| iOS | Preparado en la rama `port/ios-sprint03` (delegado de notificaciones y guía para Mac en `docs/platforms/IOS.md`). **No compilado**: requiere macOS/Xcode y firma. |
+| iOS | Rama `port/ios-sprint03`. Compilación para simulador sin firma y una prueba de integración en simulador aprobadas en el CI de macOS (Xcode 26.6, iOS 26.4; `.github/workflows/ios-build.yml`). Pendiente: firma, iPhone físico y pruebas manuales de CU-11/CU-12. Guía: `docs/platforms/IOS.md`. |
 | HarmonyOS NEXT | Puerto preparado en la rama `port/harmonyos-next` (adaptador de recordatorios propio y plugin ArkTS, guía en `docs/platforms/HARMONYOS_NEXT.md`). **No compilado ni probado**: requiere el SDK Flutter-OH 3.35.7 (Dart 3.9) y DevEco Studio. |
 | Web | Carpeta presente por la plantilla de Flutter; no es objetivo del proyecto. |
 
@@ -114,7 +114,7 @@ Migrado desde [`XlayersCeboso99/TSP_PSPS`](https://github.com/XlayersCeboso99/TS
 - Contenido educativo demostrativo; se edita en `lib/core/content/catalog.dart`.
 - Sin servidor, cuentas ni sincronización entre dispositivos.
 - La compilación *release* usa la firma *debug*; no apta para publicación en tienda.
-- iOS y HarmonyOS NEXT preparados en ramas propias, sin compilar ni probar.
+- iOS compilado y probado en simulador por CI; sin firma ni pruebas en iPhone. HarmonyOS NEXT preparado en su rama, sin compilar ni probar.
 - El catálogo admite módulos/temas vacíos que el SRS (RP-01) prohíbe; decisión pendiente.
 - Lista completa: [docs/MIGRATION_REPORT.md](docs/MIGRATION_REPORT.md#pendientes).
 
