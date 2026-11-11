@@ -107,13 +107,53 @@ jobs:
           xcrun simctl bootstatus "$UDID" -b
           flutter devices 2>&1 | tee ci-logs/devices.log
 
+      # Launch smoke test, without the test harness: installs the Runner.app
+      # built by the previous job and captures its console for 60 s. Tells a
+      # crash or a stuck engine apart from a test-harness problem.
+      - uses: actions/download-artifact@v4
+        with:
+          name: ios-build-logs
+          path: build-artifact
+
+      - name: Launch smoke test (built Runner.app)
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          ditto -x -k build-artifact/Runner-simulator.app.zip launch-app
+          xcrun simctl install "$UDID" launch-app/Runner.app
+          xcrun simctl launch --console-pty --terminate-running-process "$UDID" mx.edu.uaz.psps \
+            > ci-logs/launch-console.log 2>&1 &
+          LAUNCH_PID=$!
+          sleep 60
+          xcrun simctl io "$UDID" screenshot ci-logs/launch-60s.png || true
+          kill "$LAUNCH_PID" 2>/dev/null || true
+          xcrun simctl terminate "$UDID" mx.edu.uaz.psps || true
+          echo "--- console (first 200 lines)"
+          head -200 ci-logs/launch-console.log
+          # The app must still be alive after 60 s: a launch crash leaves a report.
+          if ls ~/Library/Logs/DiagnosticReports/Runner* 2>/dev/null; then
+            echo "::error::Runner crashed on launch"; exit 1
+          fi
+
       # Runs the real app with its native plugins (shared_preferences via
       # SwiftPM) on iOS: catalogue navigation and offline persistence.
       - name: Integration test on simulator
+        timeout-minutes: 20
         run: |
           set -o pipefail
-          flutter test integration_test/offline_test.dart -d "${{ steps.sim.outputs.udid }}" 2>&1 \
-            | tee ci-logs/integration-offline.log
+          flutter test integration_test/offline_test.dart -d "${{ steps.sim.outputs.udid }}" \
+            --verbose --reporter expanded 2>&1 | tee ci-logs/integration-offline.log
+
+      - name: Collect simulator diagnostics
+        if: always()
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl io "$UDID" screenshot ci-logs/final-screen.png || true
+          xcrun simctl spawn "$UDID" log show --last 60m --style compact \
+            --predicate 'process == "Runner" OR eventMessage CONTAINS "mx.edu.uaz.psps"' \
+            > ci-logs/simulator-runner.log 2>&1 || true
+          mkdir -p ci-logs/crash-reports
+          cp ~/Library/Logs/DiagnosticReports/Runner* ci-logs/crash-reports/ 2>/dev/null || true
+          ls -la ci-logs ci-logs/crash-reports
 
       - uses: actions/upload-artifact@v4
         if: always()
