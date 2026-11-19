@@ -1,6 +1,6 @@
 # Riesgos de la migración
 
-Responsable: coordinador (Claude Code), con hallazgos de `TRAZABILIDAD_CU01_CU10.md` (Codex) e `INVENTARIO_ORIGINAL.md` (OpenCode). Fecha: 06/11/2026.
+Fuentes: `TRAZABILIDAD_CU01_CU10.md` e `INVENTARIO_ORIGINAL.md`. Fecha: 06/11/2026.
 Estado: **Mitigado** (acción aplicada y verificada), **Aceptado** (se documenta, sin acción en esta migración), **Abierto** (requiere decisión o prueba futura).
 
 | ID | Riesgo | Evidencia | Mitigación | Estado |
@@ -19,4 +19,4 @@ Estado: **Mitigado** (acción aplicada y verificada), **Aceptado** (se documenta
 | R-12 | iOS y HarmonyOS NEXT declarados como objetivo sin verificación. | No hay macOS/Xcode ni toolchain HarmonyOS en el entorno. | README y SETUP declaran «no verificado». | Aceptado |
 | R-13 | Pruebas de dispositivo (integration_test) sin ejecutar tras la migración. | `flutter doctor` no lista ningún dispositivo Android conectado. | Registradas como pendientes en `docs/TESTING.md`. | Abierto |
 | R-14 | CI no verificado. | No existe remoto ni ejecución de GitHub Actions. | Workflow incluido; su ejecución queda pendiente de publicar el repo. | Abierto |
-| R-15 | Modificar el original por accidente. | Agentes con acceso de lectura a `PSPS_SOURCE`. | Trabajo con snapshot `git archive`; tareas con prohibición explícita; `git status` del original verificado vacío al cierre. | Mitigado |
+| R-15 | Modificar el original por accidente. | Acceso de lectura a `PSPS_SOURCE` durante la migración. | Trabajo con snapshot `git archive`; tareas con prohibición explícita; `git status` del original verificado vacío al cierre. | Mitigado |
