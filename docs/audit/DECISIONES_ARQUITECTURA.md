@@ -1,7 +1,7 @@
 # Decisiones de arquitectura y migración
 
-Responsable: coordinador (Claude Code). Fecha: 06/11/2026.
-Convención: **HECHO** = comprobado con comando o archivo citado; **DECISIÓN** = elección del coordinador con su justificación; **PENDIENTE** = abierto.
+Fecha: 06/11/2026.
+Convención: **HECHO** = comprobado con comando o archivo citado; **DECISIÓN** = elección de diseño con su justificación; **PENDIENTE** = abierto.
 
 ## D-01. Versión de origen
 
