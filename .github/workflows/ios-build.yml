@@ -1,0 +1,163 @@
+name: iOS build
+
+# Native iOS verification on a GitHub macOS runner: Dart checks, Swift Package
+# Manager plugin resolution, an unsigned simulator build and one integration
+# test on a booted simulator. Every log is published as an artifact.
+
+on:
+  push:
+    branches: [port/ios-sprint03, 'fix/ios-**']
+  pull_request:
+    branches: [port/ios-sprint03]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-build-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: 3.47.9
+
+jobs:
+  build-simulator:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Toolchain versions
+        run: |
+          mkdir -p ci-logs
+          { sw_vers; xcodebuild -version; xcode-select -p; flutter --version; \
+            flutter config --list; } 2>&1 | tee ci-logs/toolchain.log
+
+      - name: Install dependencies (locked)
+        run: flutter pub get --enforce-lockfile 2>&1 | tee ci-logs/pub-get.log
+
+      - name: Analyze
+        run: flutter analyze 2>&1 | tee ci-logs/analyze.log
+
+      - name: Unit and widget tests
+        run: flutter test 2>&1 | tee ci-logs/test.log
+
+      - name: Build iOS for simulator (unsigned)
+        run: |
+          set -o pipefail
+          flutter build ios --simulator --debug --verbose 2>&1 | tee ci-logs/build-ios-simulator.log
+
+      - name: Dependency manager used
+        if: always()
+        run: |
+          {
+            echo "Podfile present: $([ -f ios/Podfile ] && echo yes || echo no)"
+            echo "--- Swift packages resolved by Flutter:"
+            ls ios/Flutter/ephemeral/Packages 2>/dev/null || true
+            ls ios/Flutter/ephemeral/Packages/.packages 2>/dev/null || true
+            echo "--- GeneratedPluginRegistrant.m:"
+            cat ios/Runner/GeneratedPluginRegistrant.m 2>/dev/null || echo "(not generated)"
+          } 2>&1 | tee ci-logs/dependency-manager.log
+
+      - name: Package Runner.app
+        if: success()
+        run: |
+          ditto -c -k --keepParent build/ios/iphonesimulator/Runner.app ci-logs/Runner-simulator.app.zip
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-build-logs
+          path: ci-logs/
+          retention-days: 14
+
+  simulator-integration:
+    needs: build-simulator
+    runs-on: macos-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies (locked)
+        run: flutter pub get --enforce-lockfile
+
+      - name: Boot an iPhone simulator
+        id: sim
+        run: |
+          mkdir -p ci-logs
+          xcrun simctl list devices available -j > ci-logs/simulators.json
+          UDID=$(jq -r '[.devices | to_entries[] | select(.key | test("iOS")) | .value[]
+                 | select(.name | test("^iPhone"))][0].udid' ci-logs/simulators.json)
+          test -n "$UDID" && test "$UDID" != "null"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+          xcrun simctl boot "$UDID"
+          xcrun simctl bootstatus "$UDID" -b
+          flutter devices 2>&1 | tee ci-logs/devices.log
+
+      # Launch smoke test, without the test harness: installs the Runner.app
+      # built by the previous job and captures its console for 60 s. Tells a
+      # crash or a stuck engine apart from a test-harness problem.
+      - uses: actions/download-artifact@v4
+        with:
+          name: ios-build-logs
+          path: build-artifact
+
+      - name: Launch smoke test (built Runner.app)
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          ditto -x -k build-artifact/Runner-simulator.app.zip launch-app
+          xcrun simctl install "$UDID" launch-app/Runner.app
+          xcrun simctl launch --console-pty --terminate-running-process "$UDID" mx.edu.uaz.psps \
+            > ci-logs/launch-console.log 2>&1 &
+          LAUNCH_PID=$!
+          sleep 60
+          xcrun simctl io "$UDID" screenshot ci-logs/launch-60s.png || true
+          kill "$LAUNCH_PID" 2>/dev/null || true
+          xcrun simctl terminate "$UDID" mx.edu.uaz.psps || true
+          echo "--- console (first 200 lines)"
+          head -200 ci-logs/launch-console.log
+          # The app must still be alive after 60 s: a launch crash leaves a report.
+          if ls ~/Library/Logs/DiagnosticReports/Runner* 2>/dev/null; then
+            echo "::error::Runner crashed on launch"; exit 1
+          fi
+
+      # Runs the real app with its native plugins (shared_preferences via
+      # SwiftPM) on iOS: catalogue navigation and offline persistence.
+      - name: Integration test on simulator
+        timeout-minutes: 20
+        run: |
+          set -o pipefail
+          flutter test integration_test/offline_test.dart -d "${{ steps.sim.outputs.udid }}" \
+            --verbose --reporter expanded 2>&1 | tee ci-logs/integration-offline.log
+
+      - name: Collect simulator diagnostics
+        if: always()
+        run: |
+          UDID="${{ steps.sim.outputs.udid }}"
+          xcrun simctl io "$UDID" screenshot ci-logs/final-screen.png || true
+          xcrun simctl spawn "$UDID" log show --last 60m --style compact \
+            --predicate 'process == "Runner" OR eventMessage CONTAINS "mx.edu.uaz.psps"' \
+            > ci-logs/simulator-runner.log 2>&1 || true
+          mkdir -p ci-logs/crash-reports
+          cp ~/Library/Logs/DiagnosticReports/Runner* ci-logs/crash-reports/ 2>/dev/null || true
+          ls -la ci-logs ci-logs/crash-reports
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ios-simulator-logs
+          path: ci-logs/
+          retention-days: 14
